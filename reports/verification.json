@@ -1,8 +1,8 @@
 {
-  "timestamp": "2026-10-16T17:13:19.615175+00:00",
-  "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
-  "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
-  "buildId": "061c6cea895c440aa015c2287b8288b42ea0cab10a8ee94bdab06d1f3690422c",
+  "timestamp": "2026-10-16T17:34:28.630281+00:00",
+  "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f",
+  "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
+  "buildId": "ce9792258d53fc8dc8287cf707070ecfd3cfa1a06d0176098627c72e4eb2ec55",
   "playwright": {
     "e2e": {
       "stats": {
@@ -45,12 +45,12 @@
         "skipped": 0,
         "ok": true
       },
-      "startTime": 1792170373572,
-      "duration": 59669.304000000004,
+      "startTime": 1792171734530,
+      "duration": 50556.958999999995,
       "metadata": {
         "actualWorkers": 2
       },
-      "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53"
+      "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f"
     }
   },
   "baselines": 38,
@@ -66,9 +66,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3471.843,
+      "lcpMs": 3497.415000000001,
       "cls": 0,
-      "tbtMs": 63.000000000000114
+      "tbtMs": 65
     },
     {
       "profile": "mobile",
@@ -81,9 +81,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3602.522,
+      "lcpMs": 3617.1110000000003,
       "cls": 0.0515141090961704,
-      "tbtMs": 21
+      "tbtMs": 47
     },
     {
       "profile": "desktop",
@@ -96,7 +96,7 @@
         "seo": 92,
         "agentic-browsing": 25
       },
-      "lcpMs": 978.5139999999999,
+      "lcpMs": 987.9120000000001,
       "cls": 8.279849983947698e-05,
       "tbtMs": 0
     },
@@ -111,7 +111,7 @@
         "seo": 92,
         "agentic-browsing": 48
       },
-      "lcpMs": 909.1580000000001,
+      "lcpMs": 918.1030000000001,
       "cls": 0.08779966727957271,
       "tbtMs": 0
     }
@@ -139,11 +139,12 @@
     }
   ],
   "cleanCheckout": {
-    "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
+    "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f",
+    "method": "git archive of the committed source, fresh npm ci, build and production smoke",
     "npmCi": true,
     "build": true,
     "productionSmoke": {
-      "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+      "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
       "results": [
         {
           "width": 1440,
@@ -169,20 +170,20 @@
     },
     "filesEqual": true,
     "fileCount": 99,
-    "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+    "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
     "lineEndings": "LF enforced by .gitattributes"
   },
   "deployment": {
-    "url": "https://jungle-gaming-challenge-7uv2w2gbh-feliipenevesnows-projects.vercel.app",
-    "deploymentId": "dpl_36a4As6haEyoapWhwtk3DaQXJVNZ",
+    "url": "https://jungle-gaming-challenge-1mn8xr2ed-feliipenevesnows-projects.vercel.app",
+    "deploymentId": "dpl_A9a2EmqZGKwvrfRwXsYbHjP1aHsT",
     "target": "preview",
     "ready": true,
     "publicPreview": true,
     "protection": [],
-    "buildId": "061c6cea895c440aa015c2287b8288b42ea0cab10a8ee94bdab06d1f3690422c",
-    "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
-    "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
-    "verifiedBy": "Vercel CLI inspect + project API protection settings; production smoke on the same local build",
-    "timestamp": "2026-10-16T17:13:19.472429+00:00"
+    "buildId": "ce9792258d53fc8dc8287cf707070ecfd3cfa1a06d0176098627c72e4eb2ec55",
+    "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
+    "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f",
+    "verifiedBy": "Vercel CLI inspect (Ready, preview), deployment response protection settings, production smoke on the identical local build",
+    "timestamp": "2026-10-16T17:34:28.630281+00:00"
   }
 }

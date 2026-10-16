@@ -4,7 +4,7 @@ Marketplace de NFTs em React 19 e TypeScript, com APIs e pagamentos simulados na
 
 Repositório: https://github.com/feliipenevesnow/Jungle-Gaming-Challenge
 
-Aplicação: https://jungle-gaming-challenge-7uv2w2gbh-feliipenevesnows-projects.vercel.app
+Aplicação: https://jungle-gaming-challenge-1mn8xr2ed-feliipenevesnows-projects.vercel.app
 
 ## Executar
 
