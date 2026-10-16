@@ -1,0 +1,61 @@
+import { test, expect, login, api } from './support'
+import type { User, Wallet } from '../../src/types/api'
+
+test('perfil, avatar e senha persistem; senha inválida não salva parcialmente', async ({ page }) => {
+  await login(page)
+  await api(page, 'PATCH', '/profile', { avatarUrl: '/assets/images/emerald-ape.png' })
+  await page.goto('/profile')
+  await page.getByRole('textbox', { name: 'Nome de exibição', exact: true }).fill('Nome atualizado')
+  await page.getByRole('textbox', { name: 'Nome de usuário', exact: true }).fill('@nome_atualizado')
+  await page.getByRole('textbox', { name: 'Nome ENS', exact: true }).fill('nome.eth')
+  await page.getByRole('textbox', { name: 'Apelido da carteira', exact: true }).fill('Carteira fria')
+  await page.getByRole('button', { name: 'Alterar', exact: true }).click()
+  await page.getByRole('button', { name: 'Salvar', exact: true }).click()
+  await expect(page.getByRole('status')).toContainText('Perfil atualizado com sucesso!')
+  const saved = (await api<User>(page, 'GET', '/profile')).data
+  expect(saved).toMatchObject({ username: '@nome_atualizado', ensName: 'nome.eth', walletNickname: 'Carteira fria', avatarUrl: '/assets/images/sage-nomad.webp' })
+  await page.reload()
+  await expect(page.getByRole('textbox', { name: 'Nome de usuário', exact: true })).toHaveValue('@nome_atualizado')
+  await expect(page.getByRole('img', { name: 'Avatar', exact: true })).toHaveAttribute('src', saved.avatarUrl)
+  await page.getByRole('textbox', { name: 'Nome de exibição', exact: true }).fill('Não deve salvar')
+  await page.getByLabel('Senha atual', { exact: true }).fill('incorreta')
+  await page.getByLabel('Nova senha', { exact: true }).fill('senhaNova123')
+  await page.getByLabel('Confirmar nova senha', { exact: true }).fill('senhaNova123')
+  await page.getByRole('button', { name: 'Salvar', exact: true }).click()
+  await expect(page.getByRole('alert')).toContainText('Senha atual incorreta')
+  expect((await api<User>(page, 'GET', '/profile')).data.name).toBe('Nome atualizado')
+  await page.getByLabel('Senha atual', { exact: true }).fill('kurio123')
+  await page.getByRole('button', { name: 'Salvar', exact: true }).click()
+  await expect(page.getByRole('status')).toContainText('Perfil atualizado com sucesso!')
+  await page.getByRole('button', { name: 'Sair', exact: true }).click()
+  await login(page, 'alex@kurio.art', 'senhaNova123')
+})
+
+test('carteiras validam endereço, editam rede/apelido e permitem definir principal', async ({ page }) => {
+  await login(page)
+  expect((await api(page, 'POST', '/wallets', { address: 'abc', network: 'Ethereum', label: 'Inválida' })).status).toBe(400)
+  await page.goto('/wallets')
+  await page.getByLabel('Endereço da carteira*', { exact: true }).fill('abc')
+  await page.getByRole('button', { name: 'Salvar carteira' }).click()
+  await expect(page.getByRole('alert')).toContainText('Endereço da carteira inválido')
+  await page.getByLabel('Endereço da carteira*', { exact: true }).fill('0x1111111111111111111111111111111111111111')
+  await page.getByLabel('Apelido da carteira*', { exact: true }).fill('Carteira teste')
+  await page.getByRole('button', { name: 'Salvar carteira' }).click()
+  await expect(page.getByRole('status')).toContainText('Carteira salva com sucesso!')
+  await page.getByRole('button', { name: 'Editar Carteira teste', exact: true }).click()
+  const networkSelect = page.getByLabel('Rede *', { exact: true })
+  if (await networkSelect.evaluate(el => el.tagName.toLowerCase() === 'select').catch(() => false)) {
+    await networkSelect.selectOption('Polygon')
+  } else {
+    await networkSelect.click()
+    await page.getByRole('option', { name: 'Polygon' }).click()
+  }
+  await page.getByLabel('Apelido da carteira*', { exact: true }).fill('Polygon editada')
+  await page.getByRole('button', { name: 'Salvar carteira' }).click()
+  await expect(page.getByText('Carteira salva com sucesso!')).toBeVisible()
+  const wallet = (await api<Wallet[]>(page, 'GET', '/wallets')).data.find(wallet => wallet.label === 'Polygon editada')!
+  expect(wallet.network).toBe('Polygon')
+  await page.reload()
+  await page.locator('.saved-wallet').filter({ hasText: 'Polygon editada' }).getByRole('button', { name: 'Tornar principal' }).click()
+  await expect.poll(async () => (await api<Wallet[]>(page, 'GET', '/wallets')).data.find(item => item.id === wallet.id && item.isPrimary)?.label).toBe('Polygon editada')
+})

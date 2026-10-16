@@ -1,0 +1,46 @@
+import { test, expect } from './support'
+
+test('filtros combinados, ordenação, paginação e histórico preservam a URL', async ({ page }, info) => {
+  await page.goto('/')
+  await page.locator('.catalog-pagination').getByRole('button', { name: '2', exact: true }).click()
+  await expect(page).toHaveURL(/page=2/)
+  await expect(page.locator('.nft-card')).toHaveCount(3)
+  const mobile = info.project.name.includes('Mobile')
+  if (mobile) await page.getByRole('button', { name: 'Filtros do catálogo' }).click()
+  await page.getByRole('button', { name: /Arte digital/i }).click()
+  await expect(page).toHaveURL(/page=1/)
+  await page.getByRole('button', { name: /^Ethereum/ }).click()
+  await expect(page).toHaveURL(/network=Ethereum/)
+  const sortSelect = page.getByRole('combobox', { name: 'Ordenar NFTs' })
+  if (await sortSelect.evaluate(el => el.tagName.toLowerCase() === 'select').catch(() => false)) {
+    await sortSelect.selectOption('price_asc')
+  } else {
+    await sortSelect.click()
+    await page.getByRole('option', { name: 'Menor preço' }).click()
+  }
+  await expect(page).toHaveURL(/sort=price_asc/)
+  await expect(page.locator('#catalogo')).toHaveAttribute('aria-busy', 'false')
+  if (mobile) await page.getByRole('button', { name: 'Ver resultados', exact: true }).click()
+  await expect(page.locator('.nft-card').first()).toBeVisible()
+  const filteredURL = page.url()
+  const names = await page.locator('.nft-card h3').allTextContents()
+  expect(names.length).toBeGreaterThan(0)
+  await page.reload()
+  await expect(page.locator('.nft-card h3')).toHaveText(names)
+  const search = page.getByRole('textbox', { name: mobile ? 'Buscar coleções' : 'Buscar NFTs', exact: true })
+  await search.fill('Emerald')
+  await search.press('Enter')
+  await expect(page.locator('.nft-card')).toHaveCount(1)
+  await page.goBack()
+  await expect(page).toHaveURL(filteredURL)
+  await expect(page.locator('.nft-card h3')).toHaveText(names)
+  await page.goForward()
+  await expect(page.locator('.nft-card')).toHaveCount(1)
+})
+
+test('resultado vazio oferece limpeza dos filtros', async ({ page }) => {
+  await page.goto('/?search=nenhum-nft-com-este-nome')
+  await expect(page.getByText('Nenhum NFT encontrado com os filtros selecionados.')).toBeVisible()
+  await page.getByRole('button', { name: 'Limpar filtros' }).click()
+  await expect(page.locator('.nft-card')).toHaveCount(9)
+})

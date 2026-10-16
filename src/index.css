@@ -1,0 +1,94 @@
+@import "tailwindcss" source("./");
+@import "./figma.css";
+
+@layer base {
+  :root {
+    color-scheme: dark;
+    --font-mono: 'Roboto Mono', monospace;
+
+    /* Kurio Figma Design Tokens */
+    --background: #140D0A;
+    --foreground: #F5F1EB;
+    
+    --card: #241612;
+    --card-foreground: #F5F1EB;
+
+    --surface-raised: #2F1D15;
+    --surface-dark: #38220F;
+
+    --primary: #D28A4C;
+    --primary-foreground: #140D0A;
+
+    --accent: #E89B55;
+    --accent-foreground: #140D0A;
+
+    --secondary: #B39463;
+    --secondary-foreground: #F5F1EB;
+
+    --muted: #CFB28C;
+    --muted-foreground: #CFB28C;
+
+    --border: #3F2319;
+    --border-soft: #55321F;
+    --input: #3F2319;
+    --ring: #D28A4C;
+
+    --radius: 6px;
+  }
+
+  * {
+    border-color: var(--border);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-mono);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+/* Shimmer Skeleton Animation conforming to Escopo.txt */
+.bootstrap-loading {
+  position: fixed;
+  inset: 0;
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: 24px;
+  background: var(--background);
+  color: var(--muted);
+  font-family: monospace;
+}
+.bootstrap-loading > span { width: 96px; height: 96px; border-radius: 16px; }
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    #241612 0%,
+    #3F2319 50%,
+    #241612 100%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.8s infinite ease-in-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton-shimmer {
+    animation: none;
+    background: #241612;
+  }
+}
+
