@@ -4,7 +4,7 @@ Marketplace de NFTs em React 19 e TypeScript, com APIs e pagamentos simulados na
 
 Repositório: https://github.com/feliipenevesnow/Jungle-Gaming-Challenge
 
-Aplicação: https://jungle-gaming-challenge-1mn8xr2ed-feliipenevesnows-projects.vercel.app
+Aplicação: https://jungle-gaming-challenge-h6689vu3n-feliipenevesnows-projects.vercel.app
 
 ## Executar
 
@@ -26,6 +26,8 @@ No PowerShell, use `Copy-Item .env.example .env` e `npm.cmd`/`npx.cmd` caso a po
 | VITE_SOCKET_URL | vazio | Servidor Socket.IO quando os mocks estão desativados; com MSW usa a própria origem |
 
 Credenciais fictícias: `alex@kurio.art` ou `sofia@kurio.art`, senha **kurio123**. Cadastro cria uma conta independente; senhas são persistidas como PBKDF2 com salt. Uma conta nova precisa cadastrar sua carteira em `/wallets` antes de comprar. Nenhuma extensão ou pagamento real é necessário.
+
+Se a sessão expirar no pagamento, entre novamente na mesma conta para retomar dados do coletor, observação, carteira e rede. O rascunho também sobrevive ao refresh da aba; logout, reset e compra confirmada limpam os dados correspondentes. Falhas temporárias ao recuperar a sessão oferecem nova tentativa sem exigir outro login. Login/cadastro ficam centralizados no desktop e permitem rolagem interna em telas menores.
 
 ## Rotas e navegação
 
@@ -78,7 +80,7 @@ Reset integral dos mocks (apaga os dados simulados desta origem e invalida suas 
 
 ```js
 await fetch('/api/reset', { method: 'POST' })
-// O reset também limpa sessão/cache, timers, sockets e tentativas de compra.
+// O reset também limpa sessão/cache, timers, sockets, rascunhos e tentativas de compra.
 // Não é necessário recarregar para limpar o estado da aplicação.
 location.assign('/')
 ```
@@ -116,11 +118,11 @@ As evidências da execução de 16/10/2026 estão versionadas. Novas execuções
 
 | Verificação | Resultado | Relatório |
 | --- | --- | --- |
-| E2E Chromium desktop/mobile | 90 aprovados, sem retries ou testes instáveis | [HTML](reports/playwright/e2e/index.html) |
+| E2E Chromium desktop/mobile | 104 aprovados, sem retries ou testes instáveis | [HTML](reports/playwright/e2e/index.html) |
 | Navegação | 18 aprovados; 10 não aplicáveis ao viewport | [HTML](reports/playwright/navigation/index.html) |
 | Regressão visual | 16 aprovados em 390, 414, 768 e 1440 px; 38 baselines | [HTML](reports/playwright/visual/index.html) |
 | Build de produção | Compra e recuperação aprovadas em desktop/mobile | [Evidências](reports/verification.json) |
-| Checkout limpo | `npm ci`, build e compra aprovados; 99 arquivos idênticos | [Evidências](reports/verification.json) |
+| Checkout limpo | `npm ci`, build e compra aprovados; 98 arquivos idênticos | [Evidências](reports/verification.json) |
 
 Medianas Lighthouse, com três medições por página e perfil:
 

@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-10-16T17:30:12.106Z",
-  "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
+  "timestamp": "2026-10-16T18:30:41.870Z",
+  "htmlSha256": "b9fb99e1f7730da9e658bf1b841da27f1189f446128ba044a1ef5095589d5d6a",
   "conditions": "Production preview, default MSW, cold browser per run, Lighthouse standard simulated throttling, no concurrent test suites",
   "environment": {
     "node": "v24.19.0",
@@ -16,15 +16,15 @@
       "run": 1,
       "lighthouseVersion": "13.5.0",
       "scores": {
-        "performance": 91,
+        "performance": 90,
         "accessibility": 98,
         "best-practices": 100,
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3491.1450000000004,
+      "lcpMs": 3508.8360000000002,
       "cls": 0,
-      "tbtMs": 65,
+      "tbtMs": 74.94399999999996,
       "warnings": []
     },
     {
@@ -39,9 +39,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3497.415000000001,
+      "lcpMs": 3537.6050000000005,
       "cls": 0,
-      "tbtMs": 59.500000000000114,
+      "tbtMs": 59.38599999999997,
       "warnings": []
     },
     {
@@ -50,15 +50,15 @@
       "run": 3,
       "lighthouseVersion": "13.5.0",
       "scores": {
-        "performance": 90,
+        "performance": 91,
         "accessibility": 98,
         "best-practices": 100,
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3537.7529999999997,
+      "lcpMs": 3486.468,
       "cls": 0,
-      "tbtMs": 92.50000000000011,
+      "tbtMs": 20,
       "warnings": []
     },
     {
@@ -67,15 +67,15 @@
       "run": 1,
       "lighthouseVersion": "13.5.0",
       "scores": {
-        "performance": 90,
+        "performance": 89,
         "accessibility": 98,
         "best-practices": 100,
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3605.773,
+      "lcpMs": 3634.02225,
       "cls": 0.0515141090961704,
-      "tbtMs": 51,
+      "tbtMs": 74,
       "warnings": []
     },
     {
@@ -90,9 +90,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3617.1110000000003,
+      "lcpMs": 3588.7875000000004,
       "cls": 0.0515141090961704,
-      "tbtMs": 47,
+      "tbtMs": 45.725000000000136,
       "warnings": []
     },
     {
@@ -107,9 +107,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3632.3545,
+      "lcpMs": 3591.4367500000003,
       "cls": 0.0515141090961704,
-      "tbtMs": 46,
+      "tbtMs": 18,
       "warnings": []
     },
     {
@@ -118,13 +118,13 @@
       "run": 1,
       "lighthouseVersion": "13.5.0",
       "scores": {
-        "performance": 98,
+        "performance": 99,
         "accessibility": 95,
         "best-practices": 100,
         "seo": 92,
         "agentic-browsing": 25
       },
-      "lcpMs": 1083.1105000000002,
+      "lcpMs": 989.0119999999998,
       "cls": 0.00008279849983947698,
       "tbtMs": 0,
       "warnings": []
@@ -141,7 +141,7 @@
         "seo": 92,
         "agentic-browsing": 25
       },
-      "lcpMs": 987.3599999999998,
+      "lcpMs": 983.1980000000001,
       "cls": 0.00008279849983947698,
       "tbtMs": 0,
       "warnings": []
@@ -158,7 +158,7 @@
         "seo": 92,
         "agentic-browsing": 25
       },
-      "lcpMs": 987.9120000000001,
+      "lcpMs": 997.4340000000002,
       "cls": 0.00008279849983947698,
       "tbtMs": 0,
       "warnings": []
@@ -175,7 +175,7 @@
         "seo": 92,
         "agentic-browsing": 48
       },
-      "lcpMs": 969.0125,
+      "lcpMs": 900.28,
       "cls": 0.08779966727957271,
       "tbtMs": 0,
       "warnings": []
@@ -192,7 +192,7 @@
         "seo": 92,
         "agentic-browsing": 48
       },
-      "lcpMs": 918.1030000000001,
+      "lcpMs": 898.9789999999999,
       "cls": 0.08779966727957271,
       "tbtMs": 0,
       "warnings": []
@@ -209,7 +209,7 @@
         "seo": 92,
         "agentic-browsing": 48
       },
-      "lcpMs": 915.8004999999999,
+      "lcpMs": 907.1740000000002,
       "cls": 0.08779966727957271,
       "tbtMs": 0,
       "warnings": []
@@ -227,9 +227,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3497.415000000001,
+      "lcpMs": 3508.8360000000002,
       "cls": 0,
-      "tbtMs": 65
+      "tbtMs": 59.38599999999997
     },
     {
       "profile": "mobile",
@@ -242,9 +242,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3617.1110000000003,
+      "lcpMs": 3591.4367500000003,
       "cls": 0.0515141090961704,
-      "tbtMs": 47
+      "tbtMs": 45.725000000000136
     },
     {
       "profile": "desktop",
@@ -257,7 +257,7 @@
         "seo": 92,
         "agentic-browsing": 25
       },
-      "lcpMs": 987.9120000000001,
+      "lcpMs": 989.0119999999998,
       "cls": 0.00008279849983947698,
       "tbtMs": 0
     },
@@ -272,7 +272,7 @@
         "seo": 92,
         "agentic-browsing": 48
       },
-      "lcpMs": 918.1030000000001,
+      "lcpMs": 900.28,
       "cls": 0.08779966727957271,
       "tbtMs": 0
     }

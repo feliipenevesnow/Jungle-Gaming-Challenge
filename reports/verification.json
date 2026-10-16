@@ -1,24 +1,24 @@
 {
-  "timestamp": "2026-10-16T17:34:28.630281+00:00",
-  "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f",
-  "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
-  "buildId": "ce9792258d53fc8dc8287cf707070ecfd3cfa1a06d0176098627c72e4eb2ec55",
+  "timestamp": "2026-10-16T18:35:31.239775+00:00",
+  "sourceCommit": "cdcc975380ee3fcf066396a7385c7965983ac1ab",
+  "htmlSha256": "b9fb99e1f7730da9e658bf1b841da27f1189f446128ba044a1ef5095589d5d6a",
+  "buildId": "882f95f9d30afd5386e25ff53b0648c0ca3c95c045abe06a776019dc1ee4f75d",
   "playwright": {
     "e2e": {
       "stats": {
-        "total": 90,
-        "expected": 90,
+        "total": 104,
+        "expected": 104,
         "unexpected": 0,
         "flaky": 0,
         "skipped": 0,
         "ok": true
       },
-      "startTime": 1792170362167,
-      "duration": 310449.248,
+      "startTime": 1792174684557,
+      "duration": 367570.01999999996,
       "metadata": {
         "actualWorkers": 2
       },
-      "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53"
+      "sourceCommit": "cdcc975380ee3fcf066396a7385c7965983ac1ab"
     },
     "navigation": {
       "stats": {
@@ -29,12 +29,12 @@
         "skipped": 10,
         "ok": true
       },
-      "startTime": 1792170434792,
-      "duration": 43979.65,
+      "startTime": 1792175165598,
+      "duration": 35112.025,
       "metadata": {
         "actualWorkers": 2
       },
-      "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53"
+      "sourceCommit": "cdcc975380ee3fcf066396a7385c7965983ac1ab"
     },
     "visual": {
       "stats": {
@@ -45,12 +45,12 @@
         "skipped": 0,
         "ok": true
       },
-      "startTime": 1792171734530,
-      "duration": 50556.958999999995,
+      "startTime": 1792174970837,
+      "duration": 59683.885,
       "metadata": {
         "actualWorkers": 2
       },
-      "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f"
+      "sourceCommit": "cdcc975380ee3fcf066396a7385c7965983ac1ab"
     }
   },
   "baselines": 38,
@@ -66,9 +66,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3497.415000000001,
+      "lcpMs": 3508.8360000000002,
       "cls": 0,
-      "tbtMs": 65
+      "tbtMs": 59.38599999999997
     },
     {
       "profile": "mobile",
@@ -81,9 +81,9 @@
         "seo": 92,
         "agentic-browsing": 50
       },
-      "lcpMs": 3617.1110000000003,
+      "lcpMs": 3591.4367500000003,
       "cls": 0.0515141090961704,
-      "tbtMs": 47
+      "tbtMs": 45.725000000000136
     },
     {
       "profile": "desktop",
@@ -96,7 +96,7 @@
         "seo": 92,
         "agentic-browsing": 25
       },
-      "lcpMs": 987.9120000000001,
+      "lcpMs": 989.0119999999998,
       "cls": 8.279849983947698e-05,
       "tbtMs": 0
     },
@@ -111,7 +111,7 @@
         "seo": 92,
         "agentic-browsing": 48
       },
-      "lcpMs": 918.1030000000001,
+      "lcpMs": 900.28,
       "cls": 0.08779966727957271,
       "tbtMs": 0
     }
@@ -120,6 +120,7 @@
     {
       "width": 1440,
       "passed": true,
+      "modalPositionVerified": true,
       "socketPriceUpdated": true,
       "status": "CONFIRMED",
       "totalEth": "28.846",
@@ -130,6 +131,7 @@
     {
       "width": 390,
       "passed": true,
+      "modalPositionVerified": true,
       "socketPriceUpdated": true,
       "status": "CONFIRMED",
       "totalEth": "28.846",
@@ -139,16 +141,17 @@
     }
   ],
   "cleanCheckout": {
-    "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f",
+    "sourceCommit": "cdcc975380ee3fcf066396a7385c7965983ac1ab",
     "method": "git archive of the committed source, fresh npm ci, build and production smoke",
     "npmCi": true,
     "build": true,
     "productionSmoke": {
-      "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
+      "htmlSha256": "b9fb99e1f7730da9e658bf1b841da27f1189f446128ba044a1ef5095589d5d6a",
       "results": [
         {
           "width": 1440,
           "passed": true,
+          "modalPositionVerified": true,
           "socketPriceUpdated": true,
           "status": "CONFIRMED",
           "totalEth": "28.846",
@@ -159,6 +162,7 @@
         {
           "width": 390,
           "passed": true,
+          "modalPositionVerified": true,
           "socketPriceUpdated": true,
           "status": "CONFIRMED",
           "totalEth": "28.846",
@@ -169,21 +173,21 @@
       ]
     },
     "filesEqual": true,
-    "fileCount": 99,
-    "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
+    "fileCount": 98,
+    "htmlSha256": "b9fb99e1f7730da9e658bf1b841da27f1189f446128ba044a1ef5095589d5d6a",
     "lineEndings": "LF enforced by .gitattributes"
   },
   "deployment": {
-    "url": "https://jungle-gaming-challenge-1mn8xr2ed-feliipenevesnows-projects.vercel.app",
-    "deploymentId": "dpl_A9a2EmqZGKwvrfRwXsYbHjP1aHsT",
+    "url": "https://jungle-gaming-challenge-h6689vu3n-feliipenevesnows-projects.vercel.app",
+    "deploymentId": "dpl_9xrZYbtcQBeCEk1ZmYcLqR9gJUEX",
     "target": "preview",
     "ready": true,
     "publicPreview": true,
     "protection": [],
-    "buildId": "ce9792258d53fc8dc8287cf707070ecfd3cfa1a06d0176098627c72e4eb2ec55",
-    "htmlSha256": "3948b00ee85fa5a995c13a2cf7624dba016c4576d3c0b49b95e6f915e3ca30a2",
-    "sourceCommit": "0e043b1b7acc4b24369c3dd3fb2cafe213e05e0f",
+    "buildId": "882f95f9d30afd5386e25ff53b0648c0ca3c95c045abe06a776019dc1ee4f75d",
+    "htmlSha256": "b9fb99e1f7730da9e658bf1b841da27f1189f446128ba044a1ef5095589d5d6a",
+    "sourceCommit": "cdcc975380ee3fcf066396a7385c7965983ac1ab",
     "verifiedBy": "Vercel CLI inspect (Ready, preview), deployment response protection settings, production smoke on the identical local build",
-    "timestamp": "2026-10-16T17:34:28.630281+00:00"
+    "timestamp": "2026-10-16T18:35:31.239775+00:00"
   }
 }
