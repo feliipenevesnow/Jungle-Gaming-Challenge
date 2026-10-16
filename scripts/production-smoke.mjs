@@ -19,6 +19,12 @@ try {
     }, { method, path, body })
     try {
       await page.goto('http://127.0.0.1:4176/login')
+      await expect(page.getByRole('dialog')).toBeVisible()
+      const dialog = (await page.getByRole('dialog').boundingBox())
+      expect(Math.abs(dialog.x + dialog.width / 2 - width / 2)).toBeLessThan(1)
+      if (width >= 768) expect(Math.abs(dialog.y + dialog.height / 2 - 450)).toBeLessThan(1)
+      expect(dialog.y).toBeGreaterThanOrEqual(0)
+      expect(dialog.y + dialog.height).toBeLessThanOrEqual(901)
       await page.getByLabel('E-mail', { exact: true }).fill('alex@kurio.art')
       await page.getByLabel('Senha', { exact: true }).fill('kurio123')
       await page.locator('.auth-form button[type=submit]').click()
@@ -51,7 +57,7 @@ try {
       await expect(page.getByRole('dialog')).toBeVisible()
       await expect(page.locator('.order-receipt')).toHaveCount(0)
       expect((await api('GET', `/orders/${orders[0].id}`)).status).toBe(401)
-      results.push({ width, passed: true, socketPriceUpdated: true, status: orders[0].status, totalEth: orders[0].totalEth, orders: orders.length, refreshRecovered: true, authGuard: true })
+      results.push({ width, passed: true, modalPositionVerified: true, socketPriceUpdated: true, status: orders[0].status, totalEth: orders[0].totalEth, orders: orders.length, refreshRecovered: true, authGuard: true })
       console.log(JSON.stringify(results.at(-1)))
     } catch (error) {
       results.push({ width, passed: false, error: error.message })

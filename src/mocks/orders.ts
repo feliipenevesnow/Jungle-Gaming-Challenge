@@ -21,7 +21,12 @@ export function settleOrder(id: string) {
   if (!record || record.order.status !== 'PENDING') return
   const order = record.order
   let outcome = record.outcome || 'CONFIRMED'
-  if (order.items.some(item => !db.getNFTById(item.nftId) || db.availableStock(item.nftId, item.edition, id) < item.quantity)) outcome = 'REJECTED'
+  const quantitiesByNFT = new Map<string, number>()
+  for (const item of order.items) quantitiesByNFT.set(item.nftId, (quantitiesByNFT.get(item.nftId) || 0) + item.quantity)
+  // Check the entire order before changing inventory. Each edition also shares
+  // its NFT's total stock; validating lines separately can oversell that total.
+  const insufficientTotal = [...quantitiesByNFT].some(([nftId, quantity]) => db.availableNFTStock(nftId, id) < quantity)
+  if (insufficientTotal || order.items.some(item => !db.getNFTById(item.nftId) || db.availableStock(item.nftId, item.edition, id) < item.quantity)) outcome = 'REJECTED'
   let receipt: OrderReceipt | undefined
   if (outcome === 'CONFIRMED') {
     receipt = { transactionHash: `0x${crypto.randomUUID().replaceAll('-', '')}${crypto.randomUUID().replaceAll('-', '')}`, blockNumber: 19842100, explorerUrl: '#simulated', timestamp: new Date().toISOString(), payerWallet: order.walletAddress, network: order.network }

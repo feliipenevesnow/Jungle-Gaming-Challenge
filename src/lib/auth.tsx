@@ -3,6 +3,8 @@ import { createContext, useContext, useState, useEffect, useCallback, useRef, ty
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 import { api } from './axios'
 import { configureSocket, resetSocketVersions } from './socket'
+import { getSessionToken, isCurrentSession, sessionStorageKey as storageKey } from './session'
+import { clearAllCheckoutDrafts } from './checkout-draft'
 import type { User, LoginPayload, RegisterPayload, AuthResponse } from '@/types/api'
 
 interface AuthContextType {
@@ -15,11 +17,10 @@ interface AuthContextType {
   restoreAuthFocus: () => void
 }
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
-const storageKey = 'kurio_session_token'
 const privateKeys = ['session', 'favorites', 'cart', 'order', 'orders', 'cart-quote', 'checkout-quote', 'profile', 'wallets']
 export function AuthProvider({ children }: { children: ReactNode }) {
   const queryClient = useQueryClient()
-  const [token, setToken] = useState<string | null>(() => localStorage.getItem(storageKey))
+  const [token, setToken] = useState<string | null>(getSessionToken)
   const [isAuthModalOpen, setModalOpen] = useState(false)
   const [authModalMode, setMode] = useState<'login' | 'register'>('login')
   const authTrigger = useRef<HTMLElement | null>(null)
@@ -28,6 +29,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const clear = useCallback(async () => {
     await queryClient.cancelQueries({ predicate: query => privateKeys.includes(String(query.queryKey[0])) })
     queryClient.removeQueries({ predicate: query => privateKeys.includes(String(query.queryKey[0])) })
+    queryClient.getMutationCache().clear()
   }, [queryClient])
   const clearSession = useCallback(() => {
     localStorage.removeItem(storageKey); setToken(null)
@@ -35,7 +37,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     void clear()
   }, [clear, queryClient])
   const logout = useCallback(async () => {
-    try { await api.post('/auth/logout') } finally { clearSession() }
+    const originalToken = getSessionToken()
+    clearAllCheckoutDrafts()
+    try { await api.post('/auth/logout') } finally { if (isCurrentSession(originalToken)) clearSession() }
   }, [clearSession])
   const openAuthModal = useCallback((mode: 'login' | 'register' = 'login') => {
     authTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null
@@ -52,12 +56,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
   useEffect(() => { configureSocket(token, user?.id || null, queryClient) }, [token, user?.id, queryClient])
   useEffect(() => {
-    const reset = () => { clearSession(); resetSocketVersions(); setModalOpen(false); void queryClient.invalidateQueries() }
+    const reset = () => { clearAllCheckoutDrafts(); clearSession(); resetSocketVersions(); setModalOpen(false); void queryClient.invalidateQueries() }
     window.addEventListener('kurio:mocks-reset', reset)
     return () => window.removeEventListener('kurio:mocks-reset', reset)
   }, [clearSession, queryClient])
   useEffect(() => {
-    const expired = () => { clearSession(); openAuthModal('login') }
+    const expired = () => { if (token && isCurrentSession(token)) { clearSession(); openAuthModal('login') } }
     window.addEventListener('kurio:session-expired', expired)
     const duration = session.data ? new Date(session.data.expiresAt).getTime() - Date.now() : null
     const timeout = token && duration !== null ? setTimeout(expired, Math.max(0, duration)) : undefined

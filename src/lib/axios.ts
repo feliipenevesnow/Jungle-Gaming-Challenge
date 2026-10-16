@@ -1,5 +1,13 @@
-import axios, { AxiosError } from 'axios'
+import axios, { AxiosError, CanceledError, type InternalAxiosRequestConfig } from 'axios'
 import { waitForNetwork } from './network-ready'
+import { getSessionToken, isCurrentSession } from './session'
+
+function belongsToPreviousSession(config?: InternalAxiosRequestConfig): boolean {
+  if (!config || !/^\/(?:auth\/me|favorites|cart|orders|profile|wallets)(?:\/|$)/.test(config.url || '')) return false
+  const authorization = config.headers.get('Authorization')
+  const token = typeof authorization === 'string' ? authorization.replace(/^Bearer /, '') : null
+  return !isCurrentSession(token)
+}
 
 export const api = axios.create({
   // Axios owns timeout/abort handling in the fetch adapter, including under the
@@ -14,8 +22,9 @@ export const api = axios.create({
 
 // Request interceptor to attach token from localStorage if present
 api.interceptors.request.use(async (config) => {
+  const token = getSessionToken()
   await waitForNetwork()
-  const token = localStorage.getItem('kurio_session_token')
+  if (!isCurrentSession(token)) throw new CanceledError('A sessão mudou antes do envio.', config)
   if (token && config.headers) {
     config.headers.Authorization = `Bearer ${token}`
   }
@@ -31,9 +40,13 @@ api.interceptors.request.use(async (config) => {
 
 // Response interceptor to handle session expiration or global errors
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    if (belongsToPreviousSession(response.config)) throw new CanceledError('Resposta de uma sessão encerrada.', response.config)
+    return response
+  },
   (error: AxiosError) => {
-    if (error.response?.status === 401 && !['/auth/login', '/auth/register', '/auth/logout'].includes(error.config?.url || '')) {
+    if (belongsToPreviousSession(error.config)) return Promise.reject(new CanceledError('Resposta de uma sessão encerrada.', error.config))
+    if (error.response?.status === 401 && getSessionToken() && !['/auth/login', '/auth/register', '/auth/logout'].includes(error.config?.url || '')) {
       // Dispatched when session expires
       window.dispatchEvent(new CustomEvent('kurio:session-expired'))
     }

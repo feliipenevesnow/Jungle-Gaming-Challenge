@@ -1458,26 +1458,32 @@ button:disabled{
     width:100%
   }
 }
+.modal-dialog{
+  left:50%;
+  top:50%;
+  translate:-50% -50%;
+  max-height:calc(100dvh - 32px);
+  overflow-y:auto;
+  margin:0
+}
 .auth-overlay{
   background:transparent;
   backdrop-filter:none
 }
 .auth-dialog{
-  top:160px;
-  transform:translateX(-50%);
   display:block;
   width:500px;
   max-width:calc(100vw - 48px);
-  min-height:600px;
+  min-height:min(600px,calc(100dvh - 32px));
   border:0;
   border-radius:0;
   box-shadow:none;
   padding:0;
   overflow:auto;
-  max-height:calc(100dvh - 180px)
+  max-height:calc(100dvh - 32px)
 }
 .auth-dialog[data-mode=register]{
-  min-height:650px;
+  min-height:min(650px,calc(100dvh - 32px));
   border-radius:6px
 }
 .auth-heading{
@@ -1568,6 +1574,7 @@ button:disabled{
   }
   .auth-dialog,.auth-dialog[data-mode=register]{
     inset:0;
+    translate:none;
     transform:none;
     max-width:none;
     width:100%;
@@ -2151,10 +2158,6 @@ button:disabled{
   .detail-purchase>p{
     grid-column:1/-1
   }
-}
-.auth-dialog{
-  translate:-50% 0;
-  transform:none
 }
 .site-header nav a{
   display:flex;
@@ -3041,7 +3044,7 @@ footer>div:first-child{
     min-height:1911px
   }
   .auth-dialog{
-    max-height:calc(100dvh - 180px)
+    max-height:calc(100dvh - 32px)
   }
   footer>div:first-child>div>div{
     padding-right:16px
@@ -3198,7 +3201,6 @@ footer>div:first-child{
   position: fixed !important;
   left: 50% !important;
   top: 50% !important;
-  transform: translate(-50%, -50%) !important;
   width: min(480px, calc(100vw - 32px)) !important;
   max-width: 480px !important;
   margin: 0 !important;

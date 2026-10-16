@@ -7,6 +7,7 @@ import { api } from '@/lib/axios'
 import { isAxiosError } from 'axios'
 import { subscribeToNftUpdates } from '@/lib/socket'
 import { readAttempt, saveAttempt, clearAttempt, type PurchaseAttempt } from '@/lib/purchase'
+import { readCheckoutDraft, saveCheckoutDraft } from '@/lib/checkout-draft'
 import { apiErrorMessage } from '@/lib/api-error'
 import { CouponForm } from '@/components/CouponForm'
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
@@ -27,17 +28,18 @@ function CheckoutPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
   const { user, isAuthenticated, isLoading: isAuthLoading, openAuthModal } = useAuth()
+  const [initialDraft] = useState(() => user ? readCheckoutDraft(user.id) : null)
 
   const mobile = useMediaQuery('(max-width: 767px)')
   const [collectorOpen, setCollectorOpen] = useState(false)
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({})
 
   // Selected payment options
-  const [networkOverride, setSelectedNetwork] = useState<NetworkType | null>(null)
-  const [selectedWalletProvider, setSelectedWalletProvider] = useState<string>('Coinbase Wallet')
-  const [useOtherWallet, setUseOtherWallet] = useState(false)
-  const [selectedWalletId, setSelectedWalletId] = useState<string | null>(null)
-  const [collectorNote, setCollectorNote] = useState('')
+  const [networkOverride, setSelectedNetwork] = useState<NetworkType | null>(initialDraft?.networkOverride ?? null)
+  const [selectedWalletProvider, setSelectedWalletProvider] = useState(initialDraft?.selectedWalletProvider ?? 'Coinbase Wallet')
+  const [useOtherWallet, setUseOtherWallet] = useState(initialDraft?.useOtherWallet ?? false)
+  const [selectedWalletId, setSelectedWalletId] = useState<string | null>(initialDraft?.selectedWalletId ?? null)
+  const [collectorNote, setCollectorNote] = useState(initialDraft?.collectorNote ?? '')
   const [storedAttempt, setSavedAttempt] = useState(() => user ? readAttempt(user.id) : null)
   const [reviewRequired, setReviewRequired] = useState(false)
   const [connectedWalletId, setConnectedWalletId] = useState<string | null>(null)
@@ -45,13 +47,18 @@ function CheckoutPage() {
   const [paymentError, setPaymentError] = useState<string | null>(null)
 
   // Collector fields matching desktop-pagamento.png
-  const [displayName, setDisplayName] = useState(user?.name || '')
-  const [username, setUsername] = useState(user?.username || '')
-  const [profileName, setProfileName] = useState(user?.name || '')
-  const [ensOrSecondary, setEnsOrSecondary] = useState('')
-  const [walletType, setWalletType] = useState('MetaMask')
-  const [referralCode, setReferralCode] = useState('KURIO-2026')
-  const [ensName, setEnsName] = useState(user?.ensName || user?.username.replace(/^@/, '') || '')
+  const [displayName, setDisplayName] = useState(initialDraft?.displayName ?? user?.name ?? '')
+  const [username, setUsername] = useState(initialDraft?.username ?? user?.username ?? '')
+  const [profileName, setProfileName] = useState(initialDraft?.profileName ?? user?.name ?? '')
+  const [ensOrSecondary, setEnsOrSecondary] = useState(initialDraft?.ensOrSecondary ?? '')
+  const [walletType, setWalletType] = useState(initialDraft?.walletType ?? 'MetaMask')
+  const [referralCode, setReferralCode] = useState(initialDraft?.referralCode ?? 'KURIO-2026')
+  const [ensName, setEnsName] = useState(initialDraft?.ensName ?? user?.ensName ?? user?.username.replace(/^@/, '') ?? '')
+
+  const draftOwner = user?.id
+  useEffect(() => {
+    if (draftOwner) saveCheckoutDraft(draftOwner, { displayName, username, profileName, ensOrSecondary, walletType, referralCode, ensName, collectorNote, networkOverride, selectedWalletProvider, selectedWalletId, useOtherWallet })
+  }, [draftOwner, displayName, username, profileName, ensOrSecondary, walletType, referralCode, ensName, collectorNote, networkOverride, selectedWalletProvider, selectedWalletId, useOtherWallet])
 
   // Query Cart
   const { data: cart, isLoading: isCartLoading, error: cartError, refetch: refetchCart } = useQuery<CartState>({

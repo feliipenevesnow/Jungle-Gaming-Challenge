@@ -1,5 +1,6 @@
 import { keys } from '@/lib/query-keys'
 import { clearAttempt } from '@/lib/purchase'
+import { clearCheckoutDraft } from '@/lib/checkout-draft'
 import { useAuth } from '@/lib/auth'
 import { useActionNotice } from '@/components/ActionNotice'
 import { createFileRoute, Link, useParams, useNavigate } from '@tanstack/react-router'
@@ -33,7 +34,12 @@ function OrderConfirmationPage() {
     },
   })
 
-  useEffect(() => { if (order && order.status !== 'PENDING' && user) clearAttempt(user.id) }, [order, user])
+  useEffect(() => {
+    if (order && user) {
+      if (order.status !== 'PENDING') clearAttempt(user.id)
+      if (order.status === 'CONFIRMED') clearCheckoutDraft(user.id)
+    }
+  }, [order, user])
 
   // Real-time updates via Socket.IO
   useEffect(() => {
@@ -103,6 +109,7 @@ function OrderConfirmationPage() {
     year: 'numeric',
   })
   const payerWallet = order.walletAddress ? `${order.walletAddress.slice(0, 6)}...${order.walletAddress.slice(-4)}` : 'MetaMask'
+  const explorerName = order.network === 'Ethereum' ? 'Etherscan' : order.network === 'Polygon' ? 'Polygonscan' : 'Solscan'
 
   return (
     <div className="order-page font-mono">
@@ -202,14 +209,14 @@ function OrderConfirmationPage() {
 
           {/* Description */}
           <p className="text-[11px] text-[#CFB28C]/80 text-center leading-relaxed mb-6">
-            Transação confirmada na Ethereum. A propriedade foi transferida para sua carteira conectada e registrada na rede.
+            Transação confirmada na rede {order.network}. A propriedade foi transferida para sua carteira conectada na simulação.
           </p>
 
           {/* Action Button: Ver no Etherscan */}
           <div className="flex justify-center">
             <div className="order-explorer w-full sm:w-auto">
               <Button onClick={() => showNotice({ title: 'Transação simulada', description: `Este pedido foi confirmado na simulação. A referência ${order.receipt?.transactionHash ?? order.id} não corresponde a uma transação publicada em blockchain.` })} className="w-full sm:w-auto bg-[#D28A4C] hover:bg-[#E89B55] text-[#140D0A] font-bold px-8 h-10 gap-2">
-                Ver no Etherscan
+                Ver no {explorerName}
                 <ExternalLink className="w-3.5 h-3.5" />
               </Button>
             </div>

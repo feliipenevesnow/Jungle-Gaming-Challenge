@@ -27,7 +27,7 @@ export const Route = createFileRoute('/cart')({
 function CartPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const { user, isAuthenticated, isLoading: isSessionLoading, sessionError, openAuthModal } = useAuth()
+  const { user, isAuthenticated, isLoading: isSessionLoading, sessionError, retrySession, openAuthModal } = useAuth()
 
   const [realtimeAlert, setRealtimeAlert] = useState<string | null>(null)
   const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null)
@@ -41,7 +41,7 @@ function CartPage() {
       return res.data
     },
   })
-  const isLoading = isSessionLoading || sessionError || isCartLoading
+  const isLoading = isSessionLoading || isCartLoading
 
   const cartItems = useMemo(() => cart?.items || [], [cart])
   const appliedCoupon = cart?.couponCode
@@ -135,6 +135,7 @@ function CartPage() {
     if (!isAuthenticated) openAuthModal('login')
   }
 
+  if (sessionError) return <div className="page-width py-16" role="alert"><h1>Não foi possível recuperar sua sessão</h1><p className="my-4">Confira sua conexão e tente novamente para carregar o carrinho.</p><Button onClick={retrySession}>Tentar novamente</Button></div>
   if (cartError) return <div className="page-width py-16" role="alert"><p>{apiErrorMessage(cartError, 'Não foi possível carregar o carrinho.')}</p><Button onClick={() => refetchCart()}>Tentar novamente</Button></div>
 
   return (

@@ -7,6 +7,7 @@ import { calculateQuote } from './quote'
 import { createOrder, resumeOrders, settleOrder, cancelOrderTimers, publishNFT, nftUpdateEvent } from './orders'
 import { parseEthToBigInt } from '@/lib/decimal'
 import { clearAllAttempts } from '@/lib/purchase'
+import { clearAllCheckoutDrafts } from '@/lib/checkout-draft'
 import type { EditionType, NetworkType, NFTUpdatedEvent, OrderUpdatedEvent, Wallet, QuoteResponse } from '@/types/api'
 
 type Context = { request: Request; params: Record<string, string | readonly string[] | undefined> }
@@ -60,7 +61,7 @@ export const handlers = [
   http.get('/', () => passthrough()), socketHandler,
   route('post', '/api/reset', () => {
     cancelOrderTimers(); cancelPriceChange(); deferredNftEvents.length = 0; disconnectClients(0)
-    clearAllAttempts(); localStorage.removeItem('kurio_session_token'); localStorage.removeItem('kurio_msw_scenario')
+    clearAllAttempts(); clearAllCheckoutDrafts(); localStorage.removeItem('kurio_session_token'); localStorage.removeItem('kurio_msw_scenario')
     db.reset()
     window.dispatchEvent(new Event('kurio:mocks-reset'))
     return HttpResponse.json({ success: true })

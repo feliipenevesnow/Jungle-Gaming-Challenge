@@ -54,6 +54,10 @@ A fábrica `src/lib/query-keys.ts` inclui identidade nos recursos privados e os 
 
 Logout cancela/remove sessão, favoritos, carrinho, cotações, perfil, carteiras e pedidos do cache. A API verifica identidade e propriedade independentemente da proteção visual. Carrinho visitante é mesclado no login; linhas reais equivalentes somam quantidades. IDs iguais das duas fixtures de demonstração representam a mesma seleção e não são duplicados. Cupom é persistido por carrinho. Preço e estoque das linhas são reconciliados com o catálogo atual.
 
+Requisições privadas são associadas ao token de origem. Respostas de uma sessão encerrada são descartadas antes de alimentar consultas ou mutations; um 401 só expira a sessão à qual a requisição pertence. A atualização otimista de favoritos guarda também usuário/token da operação e ignora callbacks de uma sessão anterior. Logout e troca de identidade limpam os caches de consultas e mutations.
+
+O rascunho do checkout fica no sessionStorage da aba, com chave por usuário, e preserva dados do coletor, observação, carteira, rede e provedor após refresh ou expiração. Uma conta diferente não lê esse rascunho. Confirmação da compra remove o rascunho do comprador; logout explícito e reset removem os rascunhos da aba. Recusa mantém os dados para nova tentativa. Falha na recuperação da sessão oferece retry também no carrinho, sem apresentar loading indefinido.
+
 ## Precisão e ciclo do pedido
 
 Cálculos convertem strings para BigInt em wei (18 casas). O sinal pertence ao número inteiro; apresentação preserva as casas significativas. Descontos percentuais arredondam para baixo somente na fração inferior a 1 wei. Não se usa ponto flutuante no subtotal, desconto, taxa ou total. Extremos de facetas são comparados em wei e devolvidos como strings originais. O slider tem resolução de 0,01 ETH; seu editor permite até 18 casas, e o parser de search mantém os valores decimais como strings sem conversão JSON/float.
@@ -63,6 +67,8 @@ Taxas simuladas: Ethereum 0,016; Polygon 0,001; Solana 0,002 ETH.
 Antes do envio, checkout obtém nova cotação. Preço/estoque/cupom/taxa alterados exigem revisão e novo clique. O mock revalida independentemente e compara assinatura/total quando fornecidos. A mesma chave com o mesmo payload canônico recupera o pedido; conteúdo diferente retorna 409. Chaves e payloads da tentativa são persistidos por usuário em `src/lib/purchase.ts` para recuperação por refresh/timeout.
 
 Criação persiste PENDING e reserva disponibilidade. A resolução normal ocorre após 900 ms (5 s no cenário order-pending), inclusive após refresh, usando prazo persistido e reconciliação REST. CONFIRMED e REJECTED são terminais. Só confirmação desconta estoque e quantidades compradas do carrinho, uma vez. Recusa preserva itens. Recibo e preços são snapshots independentes de futuras mudanças no catálogo. Timeout é simulado **após** persistir o pedido.
+
+Antes de qualquer débito, a resolução revalida a soma das quantidades por NFT e os limites de cada edição, considerando outras reservas. Se o estoque cair durante PENDING e não comportar o pedido completo, ele é recusado sem debitar parcialmente as linhas. A confirmação usa a rede do snapshot também na descrição e no nome do explorador simulado.
 
 ## Socket.IO e controles dos mocks
 
@@ -96,6 +102,8 @@ Outros controles: `availableQuantity:0` esgota o NFT; `replay:true,version:1` em
 O escopo define comportamento para estados não desenhados. Mercado é o catálogo da tela inicial: leva a `/#catalogo`, limpa filtros e marca o link ativo. Não se inventou uma página de mercado sem referência. Itens editoriais, suporte, ofertas e downloads abrem aviso explícito de indisponibilidade. Busca, favoritos, carrinho, conta, galeria, cupom e pagamento executam seus fluxos previstos. Links de transação informam que a referência é simulada.
 
 O menu mobile tem recorte SVG transparente atrás do botão central, deixando a imagem abaixo aparecer. Login/cadastro têm foco inicial e restauração pelo Radix. Validação usa labels, descrições e alertas; loading usa shimmer e respeita movimento reduzido. Perfil, carteiras e recibo adaptam-se ao mobile mesmo sem frame específico. No pagamento mobile há acesso ao cupom e uma ação para revisar/editar os dados do coletor em diálogo. Filtros mobile usam drawer com foco contido e restauração ao fechar. O catálogo mantém a sequência da API em todos os viewports. Consultas de carrinho e carteiras distinguem erro, carregamento e vazio, com nova tentativa independente.
+
+Diálogos usam um posicionamento central único em relação à viewport, com altura máxima e rolagem interna. Login e cadastro permanecem centralizados no desktop, inclusive quando abertos a partir do catálogo com a página rolada; no mobile a autenticação ocupa a tela inteira.
 
 PNGs originais permanecem locais. WebP lossless foi conferido por igualdade de pixels RGBA. Roboto Mono WOFF2 mantém os mesmos glifos latinos e métricas nos pesos usados (400–700); licença OFL incluída. Não há fonte remota necessária. Valores matematicamente inconsistentes no Figma não são reproduzidos: o total vem da API.
 
