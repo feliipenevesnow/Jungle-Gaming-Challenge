@@ -3,7 +3,7 @@ import { nftQuery } from '@/lib/catalog-query'
 import { useState, useEffect, useRef } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { Heart, Star, Share2, ArrowLeft, Plus, Minus, Check, ShoppingCart, ChevronLeft, Search } from 'lucide-react'
+import { Heart, Star, Share2, ArrowLeft, Plus, Minus, Check, ShoppingCart, ChevronLeft, Search, RefreshCw } from 'lucide-react'
 import { useFavorites } from '@/lib/favorites'
 import { useActionNotice } from '@/components/ActionNotice'
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from '@/components/ui/dialog'
@@ -37,7 +37,7 @@ function NFTDetailPage() {
   const showNotice = useActionNotice()
 
   // Query NFT Detail from API
-  const { data: nft, isLoading, isError, error, refetch } = useQuery(nftQuery(id))
+  const { data: nft, isLoading, isFetching, isError, error, refetch } = useQuery(nftQuery(id))
 
   const selectedEdition = editionChoice || nft?.edition || '1/50'
 
@@ -89,8 +89,12 @@ function NFTDetailPage() {
       })
       return shouldCheckout
     },
-    onSuccess: (shouldCheckout) => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
+    onSuccess: async (shouldCheckout) => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        queryClient.invalidateQueries({ queryKey: ['cart-quote'] }),
+        queryClient.invalidateQueries({ queryKey: ['checkout-quote'] }),
+      ])
       if (shouldCheckout) {
         navigate({ to: '/checkout' })
       } else {
@@ -168,6 +172,13 @@ function NFTDetailPage() {
 
   return <div className="detail-page page-width">
     <nav className="detail-breadcrumb"><Link to="/">Início</Link> / <Link to="/" search={{}}>Mercado</Link></nav>
+    {/* Background Update Indicator */}
+    {isFetching && !isLoading && (
+      <div className="nft-sync-indicator mb-3 inline-flex items-center gap-2 rounded-full border border-[#3F2319] bg-[#241612] px-3.5 py-1 text-xs text-[#D28A4C] animate-pulse">
+        <RefreshCw className="h-3 w-3 animate-spin text-[#E89B55]" />
+        <span>Atualizando dados do NFT em segundo plano...</span>
+      </div>
+    )}
     {addToCartMutation.isError && <p role="alert" className="text-[#F0805F]">Não foi possível adicionar o NFT. Confira o estoque e tente novamente.</p>}
     <div className="detail-mobile-bar"><Link to="/" aria-label="Voltar ao catálogo"><ChevronLeft /></Link><button disabled={isUpdating} onClick={handleToggleFavorite} aria-label={isFavorite ? 'Remover dos favoritos' : 'Adicionar aos favoritos'}><Heart fill={isFavorite ? 'currentColor' : 'none'} /></button></div>
     <div className="detail-showcase">

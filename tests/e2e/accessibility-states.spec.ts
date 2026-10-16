@@ -86,3 +86,12 @@ test('estoque esgotado por Socket.IO atualiza carrinho e bloqueia o pagamento', 
   await page.goto('/checkout')
   await expect(page.getByRole('button', { name: 'Confirmar compra' })).toBeDisabled()
 })
+
+test('rota inexistente exibe página 404 e permite retornar ao início', async ({ page }) => {
+  await page.goto('/rota-inexistente-404')
+  await expect(page.getByRole('heading', { name: 'Página não encontrada' })).toBeVisible()
+  await page.getByRole('link', { name: 'Voltar ao início' }).click()
+  await expect(page).toHaveURL(/\/(\?.*)?$/)
+  await expect(page.locator('.nft-card').first()).toBeVisible()
+})
+

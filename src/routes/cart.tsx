@@ -2,7 +2,7 @@ import { keys } from '@/lib/query-keys'
 import { useState, useLayoutEffect, useMemo, useRef } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ChevronLeft, Plus, Minus, ShoppingBag, AlertTriangle } from 'lucide-react'
+import { ChevronLeft, Plus, Minus, ShoppingBag, AlertTriangle, RefreshCw } from 'lucide-react'
 import { api } from '@/lib/axios'
 import { apiErrorMessage } from '@/lib/api-error'
 import { useAuth } from '@/lib/auth'
@@ -95,7 +95,13 @@ function CartPage() {
 
   const adjustStockMutation = useMutation({
     mutationFn: () => api.post('/cart/adjust-stock'),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.cart(user?.id) }),
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        queryClient.invalidateQueries({ queryKey: ['cart-quote'] }),
+        queryClient.invalidateQueries({ queryKey: ['checkout-quote'] }),
+      ])
+    },
   })
 
   // Mutations
@@ -103,8 +109,12 @@ function CartPage() {
     mutationFn: async ({ itemId, quantity }: { itemId: string; quantity: number }) => {
       await api.patch(`/cart/items/${itemId}`, { quantity })
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: keys.cart(user?.id) })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        queryClient.invalidateQueries({ queryKey: ['cart-quote'] }),
+        queryClient.invalidateQueries({ queryKey: ['checkout-quote'] }),
+      ])
     },
   })
 
@@ -112,8 +122,12 @@ function CartPage() {
     mutationFn: async (itemId: string) => {
       await api.delete(`/cart/items/${itemId}`)
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: keys.cart(user?.id) })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        queryClient.invalidateQueries({ queryKey: ['cart-quote'] }),
+        queryClient.invalidateQueries({ queryKey: ['checkout-quote'] }),
+      ])
     },
   })
 
@@ -175,11 +189,36 @@ function CartPage() {
         </div>
       )}
 
+      {/* Background Update Indicator */}
+      {(isQuotePending || (isCartLoading && !isLoading)) && (
+        <div className="cart-sync-indicator mb-4 inline-flex items-center gap-2 rounded-full border border-[#3F2319] bg-[#241612] px-3.5 py-1 text-xs text-[#D28A4C] animate-pulse">
+          <RefreshCw className="h-3 w-3 animate-spin text-[#E89B55]" />
+          <span>Sincronizando cotação e carrinho em segundo plano...</span>
+        </div>
+      )}
+
       {quote?.warnings && <div role="alert" className="mb-6 rounded border border-[#D28A4C] p-4 text-sm text-[#CFB28C]">
         {quote.warnings.map(warning => <p key={warning}>{warning}</p>)}
         <Button disabled={adjustStockMutation.isPending} onClick={() => adjustStockMutation.mutate()} className="mt-3 bg-[#D28A4C] text-[#140D0A]">Ajustar quantidades ao estoque</Button>
       </div>}
-      {cartItems.length === 0 && !isLoading ? (
+      {isLoading ? (
+        <div className="cart-layout" role="status" aria-label="Carregando carrinho">
+          <div className="flex flex-col">
+            <div className="cart-table overflow-x-auto rounded-xl border border-[#3F2319] bg-[#241612] p-6 space-y-4">
+              <div className="h-6 w-1/3 skeleton-shimmer rounded" />
+              <div className="h-16 w-full skeleton-shimmer rounded" />
+              <div className="h-16 w-full skeleton-shimmer rounded" />
+            </div>
+          </div>
+          <div className="cart-sidebar flex flex-col gap-4">
+            <div className="rounded-xl border border-[#3F2319] bg-[#241612] p-6 space-y-4">
+              <div className="h-6 w-1/2 skeleton-shimmer rounded" />
+              <div className="h-10 w-full skeleton-shimmer rounded" />
+              <div className="h-12 w-full skeleton-shimmer rounded" />
+            </div>
+          </div>
+        </div>
+      ) : cartItems.length === 0 ? (
         <div className="rounded-2xl border border-[#3F2319] bg-[#241612] p-16 text-center">
           <ShoppingBag className="w-16 h-16 mx-auto text-[#3F2319] mb-4" />
           <h2 className="text-xl font-bold text-[#F5F1EB]">Seu carrinho está vazio</h2>

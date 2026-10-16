@@ -6,6 +6,7 @@ import { createRouter, RouterProvider } from '@tanstack/react-router'
 // Import generated route tree
 import { routeTree } from './routeTree.gen'
 import { parseSearch, stringifySearch } from './lib/search-params'
+import { RootNotFound } from './routes/__root'
 
 export const queryClient = new QueryClient({
   defaultOptions: {
@@ -22,6 +23,7 @@ export const router = createRouter({
   defaultPreload: 'intent',
   parseSearch,
   stringifySearch,
+  defaultNotFoundComponent: RootNotFound,
   context: {
     queryClient,
   },

@@ -18,7 +18,8 @@ import {
   AlertCircle,
   Copy,
   ExternalLink,
-  Trash2
+  Trash2,
+  RefreshCw
 } from 'lucide-react'
 
 export const Route = createFileRoute('/wallets')({
@@ -48,7 +49,7 @@ function WalletsPage() {
   const [errorMsg, setErrorMsg] = useState('')
 
   // Query wallets from API
-  const { data: wallets = [], isPending: isWalletsLoading, error: walletsError, refetch: refetchWallets } = useQuery<Wallet[]>({
+  const { data: wallets = [], isPending: isWalletsLoading, isFetching: isWalletsFetching, error: walletsError, refetch: refetchWallets } = useQuery<Wallet[]>({
     queryKey: keys.wallets(user?.id),
     queryFn: async ({ signal }) => {
       const res = await api.get<Wallet[]>('/wallets', { signal })
@@ -79,8 +80,11 @@ function WalletsPage() {
       const res = await api.patch(`/wallets/${walletId}`, { isPrimary: true })
       return res.data
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallets'] })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: keys.wallets(user?.id) }),
+        queryClient.invalidateQueries({ queryKey: ['wallets'] }),
+      ])
     },
   })
 
@@ -90,8 +94,11 @@ function WalletsPage() {
       const res = await api.delete(`/wallets/${walletId}`)
       return res.data
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['wallets'] })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: keys.wallets(user?.id) }),
+        queryClient.invalidateQueries({ queryKey: ['wallets'] }),
+      ])
     },
   })
 
@@ -373,8 +380,28 @@ function WalletsPage() {
                     : 'Você ainda não adicionou uma carteira secundária.'}
                 </p>
 
-                {/* Connected Wallets List */}
-                {wallets.length > 0 && (
+                {/* Background Sync Indicator */}
+                {isWalletsFetching && !isWalletsLoading && (
+                  <div className="wallets-sync-indicator mt-3 inline-flex items-center gap-2 rounded-full border border-[#3F2319] bg-[#241612] px-3 py-1 text-xs text-[#D28A4C] animate-pulse">
+                    <RefreshCw className="h-3 w-3 animate-spin text-[#E89B55]" />
+                    <span>Atualizando carteiras em segundo plano...</span>
+                  </div>
+                )}
+
+                {/* Connected Wallets List or Loading/Error States */}
+                {isWalletsLoading ? (
+                  <div className="mt-4 space-y-3" role="status" aria-label="Carregando carteiras">
+                    <div className="h-14 skeleton-shimmer rounded-lg" />
+                    <div className="h-14 skeleton-shimmer rounded-lg" />
+                  </div>
+                ) : walletsError ? (
+                  <div className="mt-4 p-4 rounded-lg border border-red-500/30 bg-[#241612] text-xs text-[#F0805F] flex items-center justify-between" role="alert">
+                    <span>Não foi possível carregar as carteiras cadastradas.</span>
+                    <button type="button" onClick={() => refetchWallets()} className="underline font-bold text-[#E89B55] cursor-pointer">
+                      Tentar novamente
+                    </button>
+                  </div>
+                ) : wallets.length > 0 ? (
                   <div className="mt-4 space-y-3">
                     {wallets.map((w) => (
                       <div
@@ -427,6 +454,10 @@ function WalletsPage() {
                         </div>
                       </div>
                     ))}
+                  </div>
+                ) : (
+                  <div className="mt-4 p-6 rounded-lg border border-[#3F2319] bg-[#140D0A] text-center text-xs text-[#CFB28C]">
+                    Nenhuma carteira cadastrada. Adicione sua primeira carteira acima.
                   </div>
                 )}
               </div>

@@ -9,7 +9,7 @@ import { useEffect } from 'react'
 import { api } from '@/lib/axios'
 import type { Order } from '@/types/api'
 import { subscribeToOrderUpdates } from '@/lib/socket'
-import { X, ExternalLink, AlertTriangle } from 'lucide-react'
+import { X, ExternalLink, AlertTriangle, RefreshCw } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export const Route = createFileRoute('/orders/$id')({
@@ -23,7 +23,7 @@ function OrderConfirmationPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
-  const { data: order, isLoading, isError, refetch } = useQuery<Order>({
+  const { data: order, isLoading, isFetching, isError, refetch } = useQuery<Order>({
     queryKey: keys.order(user?.id, id),
     queryFn: async ({ signal }) => {
       const res = await api.get(`/orders/${id}`, { signal })
@@ -98,7 +98,23 @@ function OrderConfirmationPage() {
   }
 
   if (order.status !== 'CONFIRMED') {
-    return <div className="order-status page-width"><h1>{order.status === 'PENDING' ? 'Processando seu pedido' : 'Pagamento recusado'}</h1><p role="status">{order.status === 'PENDING' ? 'Aguardando a confirmação da transação. Você pode retornar a esta página para acompanhar o pedido.' : 'A compra não foi confirmada. Seus NFTs continuam no carrinho.'}</p><Link to="/cart">Voltar ao carrinho</Link></div>
+    return (
+      <div className="order-status page-width py-16 flex flex-col items-center text-center font-mono">
+        <h1 className="text-2xl font-bold mb-4">{order.status === 'PENDING' ? 'Processando seu pedido' : 'Pagamento recusado'}</h1>
+        <p role="status" className="max-w-md text-xs text-[#CFB28C] mb-6">
+          {order.status === 'PENDING' ? 'Aguardando a confirmação da transação na rede blockchain. Você pode permanecer nesta tela ou retornar mais tarde.' : 'A compra não foi confirmada. Seus NFTs continuam no carrinho.'}
+        </p>
+        {order.status === 'PENDING' && isFetching && (
+          <div className="order-sync-indicator mb-6 inline-flex items-center gap-2 rounded-full border border-[#3F2319] bg-[#241612] px-3.5 py-1 text-xs text-[#D28A4C] animate-pulse">
+            <RefreshCw className="h-3.5 w-3.5 animate-spin text-[#E89B55]" />
+            <span>Sincronizando status do pedido em segundo plano...</span>
+          </div>
+        )}
+        <Link to="/cart" className="inline-flex items-center gap-2 rounded bg-[#D28A4C] px-6 py-2.5 text-xs font-bold uppercase text-[#140D0A] hover:bg-[#E89B55]">
+          Voltar ao carrinho
+        </Link>
+      </div>
+    )
   }
   const txHash = order.receipt?.transactionHash || 'Indisponível'
 

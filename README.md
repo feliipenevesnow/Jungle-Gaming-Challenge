@@ -41,7 +41,37 @@ Se a sessão expirar no pagamento, entre novamente na mesma conta para retomar d
 | Login e cadastro | `/login`, `/cadastro` |
 | Perfil, carteiras e favoritos | `/profile`, `/wallets`, `/favorites` |
 
-Mercado leva ao catálogo, limpa filtros e marca o destino ativo. Criadores, Aprenda, suporte e outras ações auxiliares abrem um aviso de indisponibilidade.
+Mercado leva ao catálogo, limpa filtros e marca o destino ativo. Criadores, Aprenda, suporte e outras ações auxiliares abrem um aviso de indisponibilidade. Rotas inexistentes exibem página 404 estilizada com ação de retorno ao início, e qualquer rota prevista suporta acesso direto via URL.
+
+## Política de cache, retries e sincronização
+
+### Cache (TanStack Query)
+- **Tempo de expiração (`staleTime`)**: Padrão de 2 minutos (`1000 * 60 * 2`) para dados de catálogo e recursos públicos, garantindo navegação instantânea. Sessão do usuário (`/auth/me`) tem `staleTime: 30s` para monitorar expiração do token. O catálogo utiliza `placeholderData: keepPreviousData` para transições suaves entre filtros e paginação sem flashes.
+- **Retenção (`gcTime`)**: 5 minutos de retenção em memória para dados inativos antes de serem liberados pelo coletor.
+- **Isolamento de dados por usuário**: Todas as chaves de dados privados (`cart`, `wallets`, `profile`, `favorites`, `orders`, `attempt`) incluem o `userId` (`keys.cart(user.id)`, `keys.wallets(user.id)`). Ao fazer logout ou trocar de conta, `queryClient.cancelQueries()` e `queryClient.removeQueries()` removem todas as chaves privadas do cache em memória e limpam o cache de mutations.
+- **Cancelamento e descarte de respostas obsoletas**: Todas as consultas passam o `signal` (`AbortSignal`) do TanStack Query para a instância do Axios (configurada com `adapter: 'fetch'`). Navegações ou alterações rápidas de filtros cancelam a requisição anterior em trânsito. O interceptor de resposta do Axios valida o token com `belongsToPreviousSession()` e descarta respostas de sessões passadas com `CanceledError`.
+
+### Retries e recuperação de falhas
+- **Consultas HTTP**: `retry: 1` padrão para tolerar oscilações momentâneas de rede sem sobrecarregar o mock da API.
+- **Sessão e recuperação**: `retry: false` para `/auth/me` e `/orders/by-key/:key`, evitando loops em 401 ou 404.
+- **Recuperação de falhas sem duplicar operações (Idempotência)**: A criação de pedidos envia o cabeçalho `Idempotency-Key` com chave UUID única persistida em `localStorage`. Se a conexão falhar ou houver timeout durante o envio, a aplicação consulta `/orders/by-key/:key` com a mesma chave, recuperando o pedido criado sem duplicar a compra.
+- **Tratamento de erros e retry manual**: Telas com falha exibem feedback contextual claro e botão "Tentar novamente" (`refetch()`).
+
+### Sincronização e atualização otimista
+- **Invalidação coerente**:
+  - Mutações no carrinho (adicionar, alterar quantidade, remover item, aplicar cupom, ajustar estoque) invalidam simultaneamente `['cart']`, `['cart-quote']` e `['checkout-quote']`.
+  - Mutações de carteira invalidam `keys.wallets(user.id)` e `['wallets']`.
+  - Atualização de perfil atualiza diretamente o cache `keys.profile(user.id)` e revalida a sessão.
+- **Sincronização em tempo real (Socket.IO + Polling)**:
+  - Eventos `nft.updated` via WebSocket reconciliam preço, estoque e versão no catálogo, detalhe e carrinho.
+  - Eventos `order.updated` atualizam pedidos confirmados ou recusados em tempo real.
+  - Pedidos pendentes usam polling a cada 2 s (`refetchInterval: 2000`) como mecanismo de redundância.
+  - Controle de versão (`version`) descarta eventos defasados ou duplicados.
+- **Atualização otimista com rollback**: Implementada na alternância de favoritos (`src/lib/favorites.ts`):
+  - `onMutate`: Cancela queries ativas de favoritos com `client.cancelQueries`, salva snapshot do estado anterior e aplica a alteração no cache otimisticamente via `client.setQueryData`.
+  - `onError`: Em caso de falha na requisição, restaura o estado anterior com `client.setQueryData(context.key, context.previous)` e exibe aviso com a reversão.
+  - `onSettled`: Invalida a consulta para sincronizar o estado final com o servidor.
+- **Feedback visual em segundo plano (Background Updates)**: Barra de sincronização global no topo da aplicação quando `useIsFetching() > 0`, além de badges contextuais de segundo plano em catálogo, carrinho, favoritos, carteiras, perfil e status de pedidos.
 
 ## Cenários de falha
 

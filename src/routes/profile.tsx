@@ -14,7 +14,8 @@ import {
   User as UserIcon, 
   Eye, 
   EyeOff, 
-  AlertCircle 
+  AlertCircle,
+  RefreshCw 
 } from 'lucide-react'
 
 export const Route = createFileRoute('/profile')({
@@ -26,9 +27,9 @@ function ProfilePage() {
   const query = useQuery({ queryKey: keys.profile(user?.id), queryFn: async ({ signal }) => (await api.get<User>('/profile', { signal })).data })
   if (query.isPending) return <div className="page-width py-16 skeleton-shimmer h-96" role="status" aria-label="Carregando perfil" />
   if (query.isError) return <div className="page-width py-16" role="alert"><p>{apiErrorMessage(query.error, 'Não foi possível carregar o perfil.')}</p><Button onClick={() => query.refetch()}>Tentar novamente</Button></div>
-  return <ProfileForm initialProfile={query.data} />
+  return <ProfileForm initialProfile={query.data} isFetching={query.isFetching && !query.isPending} />
 }
-function ProfileForm({ initialProfile }: { initialProfile: User }) {
+function ProfileForm({ initialProfile, isFetching }: { initialProfile: User; isFetching?: boolean }) {
   const showToast = useToast()
   const { user, isAuthenticated, openAuthModal, refreshUser } = useAuth()
   const queryClient = useQueryClient()
@@ -130,6 +131,14 @@ function ProfileForm({ initialProfile }: { initialProfile: User }) {
           <main className="flex-1">
             <div className="border border-[#3F2319] bg-[#241612] rounded-xl p-8 shadow-lg">
               <h1 className="text-xl font-bold text-white mb-6">Perfil do colecionador</h1>
+
+              {/* Background Sync Indicator */}
+              {isFetching && (
+                <div className="profile-sync-indicator mb-4 inline-flex items-center gap-2 rounded-full border border-[#3F2319] bg-[#140D0A] px-3.5 py-1 text-xs text-[#D28A4C] animate-pulse">
+                  <RefreshCw className="h-3 w-3 animate-spin text-[#E89B55]" />
+                  <span>Atualizando perfil em segundo plano...</span>
+                </div>
+              )}
 
               {errorMsg && (
                 <div id="profile-error" role="alert" className="p-3 mb-6 rounded-lg bg-[#241612] border border-[#D28A4C]/60 text-[#F5F1EB] text-xs flex items-center gap-2">

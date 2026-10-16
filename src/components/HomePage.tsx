@@ -11,7 +11,7 @@ import { useMediaQuery } from '@/lib/use-media-query'
 import { api } from '@/lib/axios'
 import { subscribeToNftUpdates } from '@/lib/socket'
 import type { NFT, NFTListResponse, NFTUpdatedEvent } from '@/types/api'
-import { ArrowRight, Search, SlidersHorizontal } from 'lucide-react'
+import { ArrowRight, Search, SlidersHorizontal, RefreshCw } from 'lucide-react'
 
 import type { HomeSearchParams } from '@/routes/index'
 
@@ -111,8 +111,12 @@ export function HomePage() {
         edition: nft.edition || '1/50',
       })
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['cart'] })
+    onSuccess: async () => {
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['cart'] }),
+        queryClient.invalidateQueries({ queryKey: ['cart-quote'] }),
+        queryClient.invalidateQueries({ queryKey: ['checkout-quote'] }),
+      ])
     },
   })
 
@@ -237,6 +241,14 @@ export function HomePage() {
                 </div>}
               </div>
             </div>
+
+            {/* Background Update Indicator */}
+            {isFetching && !isLoading && (
+              <div className="catalog-sync-indicator mb-4 inline-flex items-center gap-2 rounded-full border border-[#3F2319] bg-[#241612] px-3.5 py-1 text-xs text-[#D28A4C] animate-pulse">
+                <RefreshCw className="h-3 w-3 animate-spin text-[#E89B55]" />
+                <span>Atualizando catálogo em segundo plano...</span>
+              </div>
+            )}
 
             {/* Content Area */}
             {isLoading ? (

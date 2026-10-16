@@ -1,6 +1,6 @@
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { ChevronLeft, Heart } from 'lucide-react'
+import { ChevronLeft, Heart, RefreshCw } from 'lucide-react'
 import { useAuth } from '@/lib/auth'
 import { useFavorites } from '@/lib/favorites'
 import { api } from '@/lib/axios'
@@ -15,7 +15,7 @@ export const Route = createFileRoute('/favorites')({ component: FavoritesPage })
 
 function FavoritesPage() {
   const { isAuthenticated, isLoading: restoringSession, openAuthModal } = useAuth()
-  const { items, isLoading, isError, refetch, toggleFavorite, isUpdating } = useFavorites()
+  const { items, isLoading, isFetching, isError, refetch, toggleFavorite, isUpdating } = useFavorites()
   const client = useQueryClient()
   const navigate = useNavigate()
   const showNotice = useActionNotice()
@@ -43,6 +43,14 @@ function FavoritesPage() {
               <Heart size={24} className="text-[#D28A4C]" />
               Meus favoritos
             </h1>
+
+            {/* Background Update Indicator */}
+            {isFetching && !isLoading && (
+              <div className="favorites-sync-indicator mb-4 inline-flex items-center gap-2 rounded-full border border-[#3F2319] bg-[#241612] px-3.5 py-1 text-xs text-[#D28A4C] animate-pulse">
+                <RefreshCw className="h-3 w-3 animate-spin text-[#E89B55]" />
+                <span>Atualizando favoritos em segundo plano...</span>
+              </div>
+            )}
 
             {restoringSession || (isAuthenticated && isLoading) ? (
               <div className="nft-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
