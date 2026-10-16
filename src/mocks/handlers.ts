@@ -44,7 +44,7 @@ function route(method: 'get' | 'post' | 'patch' | 'put' | 'delete', path: string
     } catch (error) {
       if (error instanceof ApiFailure) return HttpResponse.json({ message: error.message, fieldErrors: error.fieldErrors }, { status: error.status })
       console.error('[Mock API]', error)
-      return HttpResponse.json({ message: 'Não foi possível processar os dados.' }, { status: 400 })
+      return HttpResponse.json({ message: 'Falha interna transitória no servidor.' }, { status: 500 })
     }
   })
 }
@@ -322,7 +322,11 @@ export const handlers = [
   }),
   route('patch', '/api/wallets/:id', async ({ request, params }) => {
     const userId = identity(request), current = db.getWalletsByUser(userId).find(wallet => wallet.id === params.id)
-    if (!current) throw new ApiFailure('Carteira não encontrada.', 404)
+    if (!current) {
+      const existsElsewhere = db.getState().wallets.some(wallet => wallet.id === params.id)
+      if (existsElsewhere) throw new ApiFailure('Você não tem permissão para alterar esta carteira.', 403)
+      throw new ApiFailure('Carteira não encontrada.', 404)
+    }
     const data = object(await request.json()), chain = network(data.network || current.network)
     const address = walletAddress(data.address || current.address, chain)
     if (db.getWalletsByUser(userId).some(wallet => wallet.id !== current.id && wallet.address.toLowerCase() === address.toLowerCase() && wallet.network === chain)) throw new ApiFailure('Esta carteira já está cadastrada.', 409)
@@ -330,13 +334,18 @@ export const handlers = [
   }),
   route('delete', '/api/wallets/:id', ({ request, params }) => {
     const userId = identity(request)
+    const existsElsewhere = db.getState().wallets.some(wallet => wallet.id === params.id && wallet.userId !== userId)
+    if (existsElsewhere) throw new ApiFailure('Você não tem permissão para remover esta carteira.', 403)
     if (!db.deleteWallet(String(params.id), userId)) throw new ApiFailure('Carteira não encontrada.', 404)
     const remaining = db.getWalletsByUser(userId)
     if (remaining.length && !remaining.some(wallet => wallet.isPrimary)) db.updateWallet(remaining[0].id, userId, { isPrimary: true })
     return HttpResponse.json({ success: true })
   }),
   route('post', '/api/wallets/:id/connect', async ({ request, params }) => {
-    const userId = identity(request), wallet = db.getWalletsByUser(userId).find(entry => entry.id === params.id)
+    const userId = identity(request)
+    const existsElsewhere = db.getState().wallets.some(entry => entry.id === params.id && entry.userId !== userId)
+    if (existsElsewhere) throw new ApiFailure('Você não tem permissão para conectar esta carteira.', 403)
+    const wallet = db.getWalletsByUser(userId).find(entry => entry.id === params.id)
     if (!wallet) throw new ApiFailure('Carteira não encontrada.', 404)
     if (scenarioOf(request) === 'wallet-rejected') throw new ApiFailure('Conexão recusada na carteira simulada.', 409)
     const data = object(await request.json())

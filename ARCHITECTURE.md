@@ -8,43 +8,90 @@ React 19 apresenta as telas. TanStack Router mantém rotas, filtros e paginaçã
 
 ## Contratos REST
 
-Base `/api`, JSON. Interfaces em `src/types/api.ts`. Valores ETH são strings decimais; quantidades são inteiros positivos; edições são `1/1`, `1/10`, `1/50`, `ABERTA`; redes são Ethereum, Polygon e Solana.
+Base `/api`, formato JSON padronizado. As interfaces TypeScript estão centralizadas em `src/types/api.ts`. Valores de ETH são trafegados como strings decimais de alta precisão (BigInt em wei); quantidades são inteiros positivos; edições válidas são `1/1`, `1/10`, `1/50` e `ABERTA`; redes suportadas são `Ethereum`, `Polygon` e `Solana`.
 
-| Método e caminho | Entrada / resposta |
+### Recursos Mínimos e Operações
+
+| Recurso | Operações |
 | --- | --- |
-| POST /auth/register | `{name,email,password,username?}` → `{user,token,expiresAt}`, 201; e-mail/username em uso: 409 |
-| POST /auth/login | `{email,password}` → mesma sessão; credenciais inválidas: 401 |
-| GET /auth/me | `{user,expiresAt}`; exige token vigente |
-| POST /auth/logout | Revoga token e conexão de carteira |
-| GET /nfts | `search,collection,network,minPrice,maxPrice,tab,sort,page,limit` → `{items,total,page,limit,totalPages,collections,networks,priceRange}` |
-| GET /nfts/:id | NFT com preço, versão, estoque total e estoque por edição; 404 se inexistente |
-| GET /favorites | Array de NFTs do usuário |
-| POST /favorites/:id; DELETE /favorites/:id | Inclusão/remoção; exige autenticação |
-| GET /cart | `{items,couponCode?,couponError?,...totais}` do usuário ou visitante; calcula desconto persistido; cupom expirado permanece removível, sem desconto e com cotação inválida |
-| POST /cart/items | `{nftId,edition,quantity}`; valida disponibilidade agregada |
-| PATCH /cart/items/:id | `{quantity}`; valida inteiro, edição e estoque |
-| DELETE /cart/items/:id | Remove linha do carrinho atual |
-| POST /cart/adjust-stock | Ajusta atomicamente todas as linhas ao estoque livre por NFT e edição, descontando reservas pendentes |
-| PUT /cart/coupon; DELETE /cart/coupon | `{code}` para aplicar; DELETE para remover |
-| POST /cart/quote | `{items:[{nftId,edition,quantity}],couponCode?,network?}` → validade, linhas/preços/versões, subtotal, desconto, taxa, total, avisos |
-| POST /orders | `CreateOrderPayload` + `Idempotency-Key`; retorna PENDING (202) ou snapshot existente (200) |
-| GET /orders | Array de pedidos do usuário |
-| GET /orders/by-key/:key | Recupera tentativa pertencente ao usuário |
-| GET /orders/:id | Snapshot e estado; 404 para ID inexistente ou de outra conta |
-| GET /orders/:id/receipt | `{orderId,orderNumber,items,receipt,totalEth}` somente se CONFIRMED; 409 enquanto indisponível |
-| GET /profile | Dados públicos do próprio usuário, sem hash |
-| PATCH /profile | Nome, username, bio, avatarUrl, ensName, walletNickname; senha opcional com currentPassword/newPassword validadas atomicamente |
-| POST /profile/change-password | `{currentPassword,newPassword}` |
-| GET /wallets | Carteiras do usuário |
-| POST /wallets | `{address,network,label,metadata?}`; 201 |
-| PATCH /wallets/:id | Endereço, rede, rótulo, principal e metadados |
-| DELETE /wallets/:id | Remove carteira própria; promove outra se necessário |
-| POST /wallets/:id/connect | `{provider}` → `{connected,walletId,network}` ou recusa simulada |
-| POST /wallets/disconnect | Encerra conexão simulada |
+| Sessão e conta | Cadastro, login, consulta da sessão, logout e expiração |
+| NFTs | Listagem com busca/filtros/ordenação/paginação e detalhe por identificador |
+| Favoritos | Consulta, inclusão e remoção |
+| Carrinho | Consulta, inclusão, alteração e remoção de itens |
+| Cotação | Validação de cupom, disponibilidade, descontos, taxas e total |
+| Pedidos | Criação idempotente e consulta do estado e recibo |
+| Perfil | Consulta, atualização de dados/avatar e alteração de senha |
+| Carteiras | Consulta, cadastro e atualização (além de remoção e conexão simulada) |
 
-Erros usam `{message,fieldErrors?}`. 400: validação; 401: sessão inválida; 404: recurso não encontrado ou pertencente a outra conta; 409: conflito/estoque/cotação/idempotência; 500: falha transitória simulada. Carteiras Ethereum/Polygon aceitam endereço hexadecimal de 40 dígitos ou ENS; Solana usa formato base58 de 32–44 caracteres. Essa validação de formato não consulta blockchain.
+### Endpoints e Assinaturas
 
-O payload de pedido contém itens, rede, carteira, cupom, `expectedTotalEth`, `quoteSignature`, observação e dados do coletor. Campos obrigatórios do layout são validados também no mock. Uma carteira cadastrada deve estar conectada no servidor simulado.
+| Método e caminho | Entrada / Payload | Resposta de Sucesso | Erros Previstos |
+| --- | --- | --- | --- |
+| `POST /auth/register` | `{ name, email, password, username? }` | `{ user, token, expiresAt }` (201) | 400 (validação), 409 (e-mail/username em uso) |
+| `POST /auth/login` | `{ email, password }` | `{ user, token, expiresAt }` (200) | 400 (validação), 401 (credenciais inválidas) |
+| `GET /auth/me` | Nenhum (requer `Authorization: Bearer <token>`) | `{ user, expiresAt }` (200) | 401 (token ausente, inválido ou expirado) |
+| `POST /auth/logout` | Nenhum (requer autenticação) | `{ success: true }` (200) | 401 (sessão inválida) |
+| `GET /nfts` | Query: `search, collection, network, minPrice, maxPrice, tab, sort, page, limit` | `NFTListResponse` (itens, total, paginação, facetas) (200) | 400 (parâmetros inválidos) |
+| `GET /nfts/:id` | Parâmetro `:id` | NFT com preço, versão, estoque total e por edição (200) | 404 (NFT inexistente) |
+| `GET /favorites` | Nenhum (requer autenticação) | Array de NFTs favoritos do usuário (200) | 401 (sessão inválida) |
+| `POST /favorites/:id` | Parâmetro `:id` (requer autenticação) | Array atualizado de IDs favoritos (200) | 401 (não autenticado), 404 (NFT inexistente) |
+| `DELETE /favorites/:id` | Parâmetro `:id` (requer autenticação) | Array atualizado de IDs favoritos (200) | 401 (não autenticado), 404 (NFT inexistente) |
+| `GET /cart` | Nenhum (suporta usuário logado ou visitante via cookie/sessão) | `{ items, couponCode?, subtotalEth, discountEth, feeEth, totalEth }` (200) | 500 (falha simulada de leitura) |
+| `POST /cart/items` | `{ nftId, edition, quantity }` | Carrinho atualizado (200) | 400 (dados inválidos), 404 (NFT inexistente), 409 (estoque insuficiente) |
+| `PATCH /cart/items/:id` | `{ quantity }` | Carrinho atualizado (200) | 400 (quantidade inválida), 404 (linha inexistente), 409 (estoque excedido) |
+| `DELETE /cart/items/:id` | Parâmetro `:id` da linha | Carrinho atualizado (200) | 404 (linha inexistente) |
+| `POST /cart/adjust-stock` | Nenhum | Carrinho reconciliado com estoque real livre (200) | 500 (falha transitória) |
+| `PUT /cart/coupon` | `{ code }` | Carrinho com cupom aplicado e desconto (200) | 400 (cupom inválido ou expirado) |
+| `DELETE /cart/coupon` | Nenhum | Carrinho sem cupom (200) | 200 |
+| `POST /cart/quote` | `{ items, couponCode?, network? }` | `{ valid, subtotalEth, discountEth, feeEth, totalEth, quoteSignature, warnings, expiresAt }` (200) | 400 (itens inválidos), 409 (conflito de disponibilidade/preço) |
+| `POST /orders` | `CreateOrderPayload` + Header `Idempotency-Key: <UUID>` | `{ id, status: 'PENDING', ... }` (202 Accepted) ou snapshot existente (200 OK) | 400 (validação), 401 (não autenticado), 409 (conflito de estoque ou de chave de idempotência com payload divergente), 500 (falha transitória) |
+| `GET /orders` | Nenhum (requer autenticação) | Array de pedidos do usuário autenticado (200) | 401 (não autenticado) |
+| `GET /orders/by-key/:key` | Parâmetro `:key` de idempotência | Pedido recuperado pertencente ao usuário (200) | 401 (não autenticado), 404 (chave não encontrada) |
+| `GET /orders/:id` | Parâmetro `:id` | Snapshot completo e status do pedido (200) | 401 (não autenticado), 404 (inexistente ou pertence a outro usuário) |
+| `GET /orders/:id/receipt` | Parâmetro `:id` | `{ orderId, orderNumber, items, receipt, totalEth }` (200) | 401 (não autenticado), 404 (inexistente), 409 (pedido pendente/recusado sem recibo) |
+| `GET /profile` | Nenhum (requer autenticação) | Dados do perfil do usuário logado, sem hash de senha (200) | 401 (não autenticado) |
+| `PATCH /profile` | `UpdateProfilePayload` (campos parciais + opcional `currentPassword` e `newPassword`) | Usuário atualizado (200) | 400 (dados/senha atual inválidos), 401 (não autenticado) |
+| `POST /profile/change-password` | `{ currentPassword, newPassword }` | `{ success: true }` (200) | 400 (senha incorreta ou formato inválido), 401 (não autenticado) |
+| `GET /wallets` | Nenhum (requer autenticação) | Lista de carteiras cadastradas do usuário (200) | 401 (não autenticado), 500 (falha simulada) |
+| `POST /wallets` | `CreateWalletPayload` (`{ address, network, label, metadata? }`) | Carteira criada (201) | 400 (endereço ou rede inválida), 401 (não autenticado), 409 (carteira duplicada para o usuário) |
+| `PATCH /wallets/:id` | `UpdateWalletPayload` | Carteira atualizada (200) | 400 (validação), 401 (não autenticado), 403 (carteira de outro usuário), 404 (inexistente), 409 (conflito de duplicidade) |
+| `DELETE /wallets/:id` | Parâmetro `:id` | `{ success: true }` (200) | 401 (não autenticado), 403 (carteira de outro usuário), 404 (inexistente) |
+| `POST /wallets/:id/connect` | `{ provider }` | `{ connected: true, walletId, network }` (200) | 401 (não autenticado), 403 (carteira de outro usuário), 404 (inexistente), 409 (recusa simulada da carteira) |
+| `POST /wallets/disconnect` | Nenhum | `{ disconnected: true }` (200) | 200 |
+
+### Representação Padronizada de Erros
+
+Todas as respostas de erro HTTP seguem o contrato tipado `ApiErrorResponse` (`src/types/api.ts`):
+
+```json
+{
+  "message": "Descrição amigável do erro para exibição ao usuário.",
+  "fieldErrors": {
+    "campo": "Mensagem específica do campo quando aplicável"
+  }
+}
+```
+
+- **HTTP 400 (Bad Request)**: Erros de validação (campos obrigatórios ausentes, endereço de carteira inválido para a blockchain selecionada, senha fora das regras de segurança, quantidades não inteiras).
+- **HTTP 401 (Unauthorized)**: Sessão inválida, inexistente ou expirada (token ausente no cabeçalho `Authorization`, token adulterado ou expiração de 24h atingida).
+- **HTTP 403 (Forbidden)**: Falta de permissão (tentativa de alterar, conectar ou excluir recursos existentes pertencentes a outro usuário, como carteiras de terceiros).
+- **HTTP 404 (Not Found)**: Recurso inexistente (NFT inexistente, linha de carrinho não encontrada, pedido ou carteira não localizados).
+- **HTTP 409 (Conflict)**: Conflitos de disponibilidade ou unicidade (estoque insuficiente para a edição solicitada, alteração concorrente de preço sem confirmação, carteira já cadastrada, e-mail/username já em uso ou violação de idempotência).
+- **HTTP 500 (Internal Server Error)**: Falhas transitórias no servidor simuladas por cenários de teste (`network-error`, `500-error`, `cart-error`, `wallets-error`), acompanhadas de mensagem clara e ação de retry.
+
+### Idempotência nas Mutações de Pedido
+
+Para garantir que oscilações de rede, reenvios de formulário ou timeouts não dupliquem pedidos e débitos, as mutações de criação de pedido (`POST /orders`) obedecem a regras estritas de idempotência:
+
+1. **Cabeçalho `Idempotency-Key`**: O cliente gera uma chave UUIDv4 persistida no storage local da tentativa da compra (`kurio_last_order_attempt_v2:<userId>`).
+2. **Mesma tentativa (Recuperação Idempotente - HTTP 200)**: Quando a API recebe uma requisição com uma `Idempotency-Key` já processada anteriormente e o payload canônico dos dados (itens, edições, quantidades, carteira, rede, totais) é idêntico ao original, a operação não executa nova compra nem reserva novo estoque. Em vez disso, recupera o snapshot do pedido original já registrado e retorna HTTP 200 OK.
+3. **Reutilização com conteúdo diferente (Conflito - HTTP 409)**: Se a mesma `Idempotency-Key` for reutilizada com um payload divergente (por exemplo, alteração de itens, de rede ou de endereço de entrega), a API detecta a inconsistência e rejeita imediatamente com HTTP 409 Conflict:
+   ```json
+   {
+     "message": "Conflito de idempotência: a mesma chave foi utilizada com dados diferentes."
+   }
+   ```
+4. **Recuperação transparente (`GET /orders/by-key/:key`)**: Caso a requisição inicial sofra timeout ou a conexão caia antes de receber a resposta HTTP, a aplicação realiza a consulta direta pelo endpoint `GET /orders/by-key/:key` usando a chave da tentativa persistida, recuperando o pedido criado sem gerar nova cobrança.
 
 ## Sessão, persistência e cache
 

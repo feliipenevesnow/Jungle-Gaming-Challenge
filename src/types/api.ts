@@ -239,3 +239,34 @@ export interface NFTListResponse {
   networks: { name: NetworkType; count: number }[]
   priceRange: { min: string; max: string }
 }
+
+export interface ApiErrorResponse {
+  message: string
+  fieldErrors?: Record<string, string>
+}
+
+export interface ChangePasswordPayload {
+  currentPassword: string
+  newPassword: string
+}
+
+export interface UpdateProfilePayload extends Partial<User> {
+  currentPassword?: string
+  newPassword?: string
+}
+
+export interface CreateWalletPayload {
+  address: string
+  network: NetworkType
+  label: string
+  metadata?: Wallet['metadata']
+}
+
+export interface UpdateWalletPayload {
+  address?: string
+  network?: NetworkType
+  label?: string
+  isPrimary?: boolean
+  metadata?: Wallet['metadata']
+}
+
