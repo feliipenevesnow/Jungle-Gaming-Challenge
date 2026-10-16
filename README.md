@@ -1,6 +1,6 @@
 # Kurio — Jungle Gaming Challenge
 
-Marketplace de NFTs em React 19 e TypeScript, com APIs e pagamentos simulados na camada de rede por MSW. Referências: [Escopo.txt](Escopo.txt), [Telas Figma.txt](Telas%20Figma.txt), PNGs originais em `figma-screens/`.
+Marketplace de NFTs em React 19 e TypeScript, com APIs e pagamentos simulados na camada de rede por MSW. Referências visuais: PNGs originais em `figma-screens/`.
 
 Repositório: https://github.com/feliipenevesnow/Jungle-Gaming-Challenge
 
@@ -41,7 +41,7 @@ Se a sessão expirar no pagamento, entre novamente na mesma conta para retomar d
 | Login e cadastro | `/login`, `/cadastro` |
 | Perfil, carteiras e favoritos | `/profile`, `/wallets`, `/favorites` |
 
-Mercado leva ao catálogo, limpa filtros e marca o destino ativo. Criadores, Aprenda, suporte e outras ações fora do escopo abrem um aviso de indisponibilidade.
+Mercado leva ao catálogo, limpa filtros e marca o destino ativo. Criadores, Aprenda, suporte e outras ações auxiliares abrem um aviso de indisponibilidade.
 
 ## Cenários de falha
 
