@@ -173,6 +173,20 @@ test('favoritos abertos acompanham os preços recebidos por Socket.IO', async ({
   await expect(card).toContainText('2.19 ETH')
 })
 
+test('reconexão informa preço alterado mesmo quando o frame se perde durante a desconexão', async ({ page }) => {
+  await login(page)
+  await page.goto('/cart')
+  await expect(page.locator('.cart-totals')).toContainText('26.846 ETH')
+  await event(page, { type: 'socket.disconnect', durationMs: 5000 })
+  await expect.poll(async () => (await api<{ socketReady: boolean }>(page, 'GET', '/scenario')).data.socketReady).toBe(false)
+  await api(page, 'POST', '/scenario/events', { type: 'nft.updated', id: 'nft-1', priceEth: '2.19' })
+  await expect(page.locator('.cart-totals')).toContainText('26.846 ETH')
+  await page.clock.fastForward(6000)
+  await expect.poll(async () => (await api<{ socketReady: boolean }>(page, 'GET', '/scenario')).data.socketReady).toBe(true)
+  await expect(page.locator('.cart-totals')).toContainText('28.846 ETH')
+  await expect(page.getByRole('status').filter({ hasText: 'tempo real' })).toBeVisible()
+})
+
 test('skeleton do catálogo preserva o tamanho do primeiro card final', async ({ page }) => {
   await page.evaluate(() => document.fonts.ready)
   const finalCard = await page.locator('.nft-card').first().boundingBox()

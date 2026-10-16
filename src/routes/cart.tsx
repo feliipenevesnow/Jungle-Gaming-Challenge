@@ -1,5 +1,5 @@
 import { keys } from '@/lib/query-keys'
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useRef } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, Plus, Minus, ShoppingBag, AlertTriangle } from 'lucide-react'
@@ -43,9 +43,20 @@ function CartPage() {
 
   const cartItems = useMemo(() => cart?.items || [], [cart])
   const appliedCoupon = cart?.couponCode
+  const previousCart = useRef<{ owner?: string; items: CartItem[] } | null>(null)
 
   // Socket.IO live update listener
   useEffect(() => {
+    // REST may reconcile before the matching socket frame, or recover a frame
+    // missed during disconnection. Notify from either source without relying
+    // on a stale event being applied again to the shared cache.
+    const previous = previousCart.current
+    const changed = previous && previous.owner === user?.id
+      ? cartItems.find(item => previous.items.some(before => before.nftId === item.nftId && before.edition === item.edition && before.nft.version < item.nft.version))
+      : undefined
+    previousCart.current = { owner: user?.id, items: cartItems }
+    if (previous && previous.owner !== user?.id) setRealtimeAlert(null)
+    if (changed) setRealtimeAlert(`O item "${changed.nft.name}" teve seu preço ou disponibilidade alterado em tempo real.`)
     if (cartItems.length === 0) return
 
     const unsubscribe = subscribeToNftUpdates((event: NFTUpdatedEvent) => {
@@ -60,7 +71,7 @@ function CartPage() {
     return () => {
       unsubscribe()
     }
-  }, [cartItems])
+  }, [cartItems, user?.id])
 
   // Quote Query
   const { data: quote, refetch: refetchQuote, error: quoteError, isPending: isQuotePending } = useQuery<QuoteResponse>({
