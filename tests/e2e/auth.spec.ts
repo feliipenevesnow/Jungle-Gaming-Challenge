@@ -66,12 +66,13 @@ test('cadastro permite sair, entrar novamente e cadastrar carteira para comprar'
   await expect(page.getByRole('button', { name: 'Confirmar compra' })).toBeDisabled()
   await page.getByRole('link', { name: 'Adicionar carteira', exact: true }).click()
   const networkSelect = page.getByLabel('Rede *', { exact: true })
-  if (await networkSelect.evaluate(el => el.tagName.toLowerCase() === 'select').catch(() => false)) {
-    await networkSelect.selectOption('Polygon')
-  } else {
-    await networkSelect.click()
-    await page.getByRole('option', { name: 'Polygon' }).click()
-  }
+  await networkSelect.press('ArrowDown')
+  const networkOptions = page.getByRole('listbox')
+  await expect(networkOptions).toBeVisible()
+  await networkOptions.press('p')
+  await expect(page.getByRole('option', { name: 'Polygon', exact: true })).toBeFocused()
+  await page.keyboard.press('Enter')
+  await expect(networkSelect).toContainText('Polygon')
   await page.getByLabel('Endereço da carteira*', { exact: true }).fill('0x1234567890123456789012345678901234567890')
   await page.getByRole('button', { name: 'Salvar carteira' }).click()
   await expect(page.getByText('Carteira salva com sucesso!')).toBeVisible()

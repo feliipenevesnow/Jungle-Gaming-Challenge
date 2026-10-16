@@ -7,9 +7,13 @@ import type { CreateOrderPayload, Order, OrderReceipt } from '@/types/api'
 const timers = new Map<string, ReturnType<typeof setTimeout>>()
 export function cancelOrderTimers() { timers.forEach(clearTimeout); timers.clear() }
 
-export function publishNFT(id: string) {
+export function nftUpdateEvent(id: string) {
   const nft = db.getNFTById(id)
-  if (nft) broadcastNftUpdated({ eventId: crypto.randomUUID(), resourceId: id, version: nft.version, priceEth: nft.priceEth, availableQuantity: nft.availableQuantity, editionStock: nft.editionStock, timestamp: new Date().toISOString() })
+  if (nft) return { eventId: crypto.randomUUID(), resourceId: id, version: nft.version, priceEth: nft.priceEth, availableQuantity: nft.availableQuantity, editionStock: nft.editionStock ? { ...nft.editionStock } : undefined, timestamp: new Date().toISOString() }
+}
+export function publishNFT(id: string) {
+  const event = nftUpdateEvent(id)
+  if (event) broadcastNftUpdated(event)
 }
 
 export function settleOrder(id: string) {

@@ -4,10 +4,10 @@ import { hashPassword, verifyPassword } from './password'
 import { socketHandler, disconnectClients, broadcastNftUpdated, broadcastOrderUpdated, hasSocketClient } from './socket'
 import { ApiFailure, object, text, email, password, username, walletAddress, network, quantity, items, eth, profile } from './validation'
 import { calculateQuote } from './quote'
-import { createOrder, resumeOrders, settleOrder, cancelOrderTimers, publishNFT } from './orders'
+import { createOrder, resumeOrders, settleOrder, cancelOrderTimers, publishNFT, nftUpdateEvent } from './orders'
 import { parseEthToBigInt } from '@/lib/decimal'
 import { clearAllAttempts } from '@/lib/purchase'
-import type { EditionType, NetworkType, OrderUpdatedEvent, Wallet, QuoteResponse } from '@/types/api'
+import type { EditionType, NetworkType, NFTUpdatedEvent, OrderUpdatedEvent, Wallet, QuoteResponse } from '@/types/api'
 
 type Context = { request: Request; params: Record<string, string | readonly string[] | undefined> }
 const scenarioOf = (request: Request) => request.headers.get('x-msw-scenario') || localStorage.getItem('kurio_msw_scenario') || 'default'
@@ -54,11 +54,12 @@ function walletMetadata(value: unknown): Wallet['metadata'] {
 }
 let scheduledPrice = false
 let priceTimer: ReturnType<typeof setTimeout> | undefined
+const deferredNftEvents: NFTUpdatedEvent[] = []
 function cancelPriceChange() { clearTimeout(priceTimer); priceTimer = undefined; scheduledPrice = false }
 export const handlers = [
   http.get('/', () => passthrough()), socketHandler,
   route('post', '/api/reset', () => {
-    cancelOrderTimers(); cancelPriceChange(); disconnectClients(0)
+    cancelOrderTimers(); cancelPriceChange(); deferredNftEvents.length = 0; disconnectClients(0)
     clearAllAttempts(); localStorage.removeItem('kurio_session_token'); localStorage.removeItem('kurio_msw_scenario')
     db.reset()
     window.dispatchEvent(new Event('kurio:mocks-reset'))
@@ -69,6 +70,7 @@ export const handlers = [
     if (data.scenario && data.scenario !== 'default') localStorage.setItem('kurio_msw_scenario', text(data.scenario, 'Cenário'))
     else localStorage.removeItem('kurio_msw_scenario')
     cancelPriceChange()
+    deferredNftEvents.length = 0
     return HttpResponse.json({ scenario: data.scenario || 'default' })
   }, false),
   route('get', '/api/scenario', ({ request }) => HttpResponse.json({ scenario: scenarioOf(request), socketReady: hasSocketClient(identity(request, false)) }), false),
@@ -344,6 +346,7 @@ export const handlers = [
   route('post', '/api/scenario/events', async ({ request }) => {
     const data = object(await request.json())
     if (data.type === 'socket.disconnect') { disconnectClients(typeof data.durationMs === 'number' ? data.durationMs : 500); return HttpResponse.json({ success: true }) }
+    if (data.type === 'nft.flush') { const pending = deferredNftEvents.splice(0); pending.forEach(broadcastNftUpdated); return HttpResponse.json({ success: true, count: pending.length }) }
     if (data.type === 'session.expire') { db.revokeSession(tokenOf(request)); return HttpResponse.json({ success: true }) }
     if (data.type === 'order.resolve') { const userId = identity(request); const order = db.getOrderById(text(data.id, 'Pedido')); if (!order || order.userId !== userId) throw new ApiFailure('Pedido não encontrado.', 404); settleOrder(order.id); return HttpResponse.json({ success: true }) }
     if (data.type === 'nft.updated') {
@@ -354,7 +357,9 @@ export const handlers = [
       else {
         db.updateNFTPriceAndStock(id, price, stock)
         if (nft.editionStock) for (const key of Object.keys(nft.editionStock) as EditionType[]) nft.editionStock[key] = Math.min(stock, nft.editionStock[key] || 0)
-        db.persistChanges(); publishNFT(id)
+        db.persistChanges()
+        if (data.defer === true) { const event = nftUpdateEvent(id); if (event) deferredNftEvents.push(event) }
+        else publishNFT(id)
       }
       return HttpResponse.json({ success: true })
     }

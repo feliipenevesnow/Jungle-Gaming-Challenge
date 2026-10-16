@@ -40,11 +40,16 @@ export function getSocket(): Promise<Socket<ServerEvents, ClientEvents>> {
     const key = `nft/${event.resourceId}`
     const detail = client?.getQueryData<NFT>(['nft', event.resourceId])
     const listVersions = client?.getQueriesData<NFTListResponse>({ queryKey: ['nfts'] }).flatMap(([, data]) => data?.items?.filter(item => item.id === event.resourceId).map(item => item.version) || []) || []
-    const previous = Math.max(versions.get(key) || 0, detail?.version || 0, ...listVersions)
-    if (event.version <= previous) return
+    const known = Math.max(detail?.version || 0, ...listVersions)
+    if (event.version <= (versions.get(key) || 0) || event.version < known) return
     versions.set(key, event.version)
-    if (detail) client?.setQueryData(['nft', event.resourceId], { ...detail, priceEth: event.priceEth, availableQuantity: event.availableQuantity, editionStock: event.editionStock || detail.editionStock, version: event.version })
-    nftListeners.forEach(listener => listener(event))
+    // A REST response may already contain this version in one cache while cart,
+    // quotes or favorites still hold an older snapshot. Reconcile those caches
+    // once, without applying the equal-version payload or notifying twice.
+    if (event.version > known) {
+      if (detail) client?.setQueryData(['nft', event.resourceId], { ...detail, priceEth: event.priceEth, availableQuantity: event.availableQuantity, editionStock: event.editionStock || detail.editionStock, version: event.version })
+      nftListeners.forEach(listener => listener(event))
+    }
     for (const prefix of ['nfts', 'nft', 'cart', 'cart-quote', 'checkout-quote', 'suggested-nfts', 'related-nfts', 'favorites']) void client?.invalidateQueries({ queryKey: [prefix] })
   })
   instance.on('order.updated', event => {

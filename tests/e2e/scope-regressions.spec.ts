@@ -120,9 +120,11 @@ test('TTL real expira pelo relógio e mantém o checkout para retomar o login', 
 
 test('reset cancela alteração agendada e remove tentativas antigas sem recarregar', async ({ page }) => {
   await scenario(page, 'price-changed')
+  await event(page, { type: 'nft.updated', id: 'nft-1', priceEth: '9.19', defer: true })
   await api(page, 'POST', '/cart/quote', { items: [{ nftId: 'nft-1', edition: '1/50', quantity: 1 }], network: 'Ethereum' })
   await page.evaluate(() => localStorage.setItem('kurio_purchase_attempt:user-alex', JSON.stringify({ key: 'old-attempt', payload: {} })))
   await api(page, 'POST', '/reset')
+  expect((await api<{ count: number }>(page, 'POST', '/scenario/events', { type: 'nft.flush' })).data.count).toBe(0)
   await page.clock.fastForward(1000)
   expect((await api<{ priceEth: string }>(page, 'GET', '/nfts/nft-1')).data.priceEth).toBe('1.19')
   expect(await page.evaluate(() => localStorage.getItem('kurio_purchase_attempt:user-alex'))).toBeNull()
@@ -171,6 +173,26 @@ test('favoritos abertos acompanham os preços recebidos por Socket.IO', async ({
   await expect(card).toContainText('1.19 ETH')
   await event(page, { type: 'nft.updated', id: 'nft-1', priceEth: '2.19' })
   await expect(card).toContainText('2.19 ETH')
+})
+
+test('evento já recebido pelo catálogo via REST reconcilia o carrinho sem reaplicar duplicata', async ({ page }) => {
+  await login(page)
+  await page.goto('/cart')
+  await expect(page.locator('.cart-totals')).toContainText('26.846 ETH')
+  await expect.poll(async () => (await api<{ socketReady: boolean }>(page, 'GET', '/scenario')).data.socketReady).toBe(true)
+  await page.clock.runFor(500)
+  await event(page, { type: 'nft.updated', id: 'nft-1', priceEth: '2.19', defer: true })
+  await page.getByRole('link', { name: 'Início', exact: true }).filter({ visible: true }).first().click()
+  await expect(page.locator('.nft-card').filter({ hasText: 'Emerald Ape #042' })).toContainText('2.19 ETH')
+  await page.getByRole('link', { name: /Carrinho/ }).filter({ visible: true }).first().click()
+  await expect(page.locator('.cart-totals')).toContainText('26.846 ETH')
+  expect((await api<{ count: number }>(page, 'POST', '/scenario/events', { type: 'nft.flush' })).data.count).toBe(1)
+  await expect(page.locator('.cart-totals')).toContainText('28.846 ETH')
+  await expect(page.getByRole('status').filter({ hasText: 'tempo real' })).toBeVisible()
+  await event(page, { type: 'nft.updated', id: 'nft-1', priceEth: '99.00', version: 2, replay: true })
+  await page.clock.runFor(500)
+  await expect(page.locator('.cart-totals')).toContainText('28.846 ETH')
+  await expect(page.locator('.cart-row').first()).toContainText('2.19 ETH')
 })
 
 test('reconexão informa preço alterado mesmo quando o frame se perde durante a desconexão', async ({ page }) => {
