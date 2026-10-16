@@ -175,14 +175,15 @@ test('favoritos abertos acompanham os preços recebidos por Socket.IO', async ({
   await expect(card).toContainText('2.19 ETH')
 })
 
-test('evento já recebido pelo catálogo via REST reconcilia o carrinho sem reaplicar duplicata', async ({ page }) => {
+test('evento já recebido pelo catálogo via REST reconcilia o carrinho sem reaplicar duplicata', async ({ page }, info) => {
   await login(page)
   await page.goto('/cart')
   await expect(page.locator('.cart-totals')).toContainText('26.846 ETH')
   await expect.poll(async () => (await api<{ socketReady: boolean }>(page, 'GET', '/scenario')).data.socketReady).toBe(true)
   await page.clock.runFor(500)
   await event(page, { type: 'nft.updated', id: 'nft-1', priceEth: '2.19', defer: true })
-  await page.getByRole('link', { name: 'Início', exact: true }).filter({ visible: true }).first().click()
+  const home = info.project.name.includes('Mobile') ? page.getByRole('link', { name: 'Voltar', exact: true }) : page.getByRole('banner').getByRole('link', { name: 'Início', exact: true })
+  await home.click()
   await expect(page.locator('.nft-card').filter({ hasText: 'Emerald Ape #042' })).toContainText('2.19 ETH')
   await page.getByRole('link', { name: /Carrinho/ }).filter({ visible: true }).first().click()
   await expect(page.locator('.cart-totals')).toContainText('26.846 ETH')
