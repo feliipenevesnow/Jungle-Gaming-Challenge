@@ -13,7 +13,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = () => {
-  const { user, isAuthenticated, openAuthModal, logout } = useAuth()
+  const { user, isAuthenticated, isLoading: isSessionLoading, sessionError, openAuthModal, logout } = useAuth()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [userDropdownOpen, setUserDropdownOpen] = useState(false)
   const routerState = useRouterState()
@@ -30,6 +30,7 @@ export const Header: React.FC<HeaderProps> = () => {
   // Fetch real cart state from API
   const { data: cart } = useQuery<CartState>({
     queryKey: keys.cart(user?.id),
+    enabled: !isSessionLoading && !sessionError,
     queryFn: async ({ signal }) => {
       const res = await api.get('/cart', { signal })
       return res.data

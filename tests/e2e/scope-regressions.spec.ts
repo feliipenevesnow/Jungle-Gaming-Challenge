@@ -187,6 +187,19 @@ test('reconexão informa preço alterado mesmo quando o frame se perde durante a
   await expect(page.getByRole('status').filter({ hasText: 'tempo real' })).toBeVisible()
 })
 
+test('carrinho espera recuperar a identidade antes de consultar dados privados após refresh', async ({ page }) => {
+  await login(page)
+  await scenario(page, 'slow-network')
+  const sequence: string[] = []
+  page.on('response', response => { if (new URL(response.url()).pathname === '/api/auth/me' && response.ok()) sequence.push('session') })
+  page.on('request', request => { if (new URL(request.url()).pathname === '/api/cart' && request.method() === 'GET') sequence.push('cart') })
+  await page.goto('/cart')
+  await expect(page.locator('.cart-row').first()).toContainText('Emerald Ape')
+  expect(sequence.indexOf('session')).toBeGreaterThanOrEqual(0)
+  expect(sequence.indexOf('cart')).toBeGreaterThan(sequence.indexOf('session'))
+  await expect(page.locator('.cart-totals')).toContainText('26.846 ETH')
+})
+
 test('skeleton do catálogo preserva o tamanho do primeiro card final', async ({ page }) => {
   await page.evaluate(() => document.fonts.ready)
   const finalCard = await page.locator('.nft-card').first().boundingBox()

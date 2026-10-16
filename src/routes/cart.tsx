@@ -1,5 +1,5 @@
 import { keys } from '@/lib/query-keys'
-import { useState, useEffect, useMemo, useRef } from 'react'
+import { useState, useLayoutEffect, useMemo, useRef } from 'react'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { ChevronLeft, Plus, Minus, ShoppingBag, AlertTriangle } from 'lucide-react'
@@ -27,26 +27,28 @@ export const Route = createFileRoute('/cart')({
 function CartPage() {
   const queryClient = useQueryClient()
   const navigate = useNavigate()
-  const { user, isAuthenticated, openAuthModal } = useAuth()
+  const { user, isAuthenticated, isLoading: isSessionLoading, sessionError, openAuthModal } = useAuth()
 
   const [realtimeAlert, setRealtimeAlert] = useState<string | null>(null)
   const [itemToRemove, setItemToRemove] = useState<CartItem | null>(null)
 
   // Query Cart Items
-  const { data: cart, isLoading, error: cartError, refetch: refetchCart } = useQuery<CartState>({
+  const { data: cart, isLoading: isCartLoading, error: cartError, refetch: refetchCart } = useQuery<CartState>({
     queryKey: keys.cart(user?.id),
+    enabled: !isSessionLoading && !sessionError,
     queryFn: async ({ signal }) => {
       const res = await api.get('/cart', { signal })
       return res.data
     },
   })
+  const isLoading = isSessionLoading || sessionError || isCartLoading
 
   const cartItems = useMemo(() => cart?.items || [], [cart])
   const appliedCoupon = cart?.couponCode
   const previousCart = useRef<{ owner?: string; items: CartItem[] } | null>(null)
 
   // Socket.IO live update listener
-  useEffect(() => {
+  useLayoutEffect(() => {
     // REST may reconcile before the matching socket frame, or recover a frame
     // missed during disconnection. Notify from either source without relying
     // on a stale event being applied again to the shared cache.
@@ -88,7 +90,7 @@ function CartPage() {
       }, { signal })
       return res.data
     },
-    enabled: cartItems.length > 0,
+    enabled: !isSessionLoading && !sessionError && cartItems.length > 0,
   })
 
   const adjustStockMutation = useMutation({

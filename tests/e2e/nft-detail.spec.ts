@@ -25,7 +25,7 @@ test.describe('Detalhes do NFT', () => {
     })
     for (const nft of ids) {
       await page.goto(`/nfts/${nft.id}`)
-      await expect(page.getByRole('heading', { name: nft.name, exact: true })).toBeVisible()
+      await expect(page.getByRole('heading', { level: 1, name: nft.name, exact: true })).toBeVisible()
       await expect(page.locator('.detail-quantity')).toContainText('1')
       await expect(page.getByRole('button', { name: 'Adicionar ao Carrinho', exact: true })).toBeEnabled()
       await expect(page.getByText('Something went wrong!')).toHaveCount(0)
