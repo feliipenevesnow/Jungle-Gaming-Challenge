@@ -95,9 +95,21 @@ Outros controles: `availableQuantity:0` esgota o NFT; `replay:true,version:1` em
 
 O escopo define comportamento para estados não desenhados. Mercado é o catálogo da tela inicial: leva a `/#catalogo`, limpa filtros e marca o link ativo. Não se inventou uma página de mercado sem referência. Itens editoriais, suporte, ofertas e downloads abrem aviso explícito de indisponibilidade. Busca, favoritos, carrinho, conta, galeria, cupom e pagamento executam seus fluxos previstos. Links de transação informam que a referência é simulada.
 
-O menu mobile tem recorte SVG transparente atrás do botão central, deixando a imagem abaixo aparecer. Login/cadastro têm foco inicial e restauração pelo Radix. Validação usa labels, descrições e alertas; loading usa shimmer e respeita movimento reduzido. Perfil, carteiras e recibo adaptam-se ao mobile mesmo sem frame específico. No pagamento mobile há acesso ao cupom e uma ação para revisar/editar os dados do coletor em diálogo, registrados em VISUAL-REVIEW.md. Filtros mobile usam drawer com foco contido e restauração ao fechar. O catálogo mantém a sequência da API em todos os viewports. Consultas de carrinho e carteiras distinguem erro, carregamento e vazio, com nova tentativa independente.
+O menu mobile tem recorte SVG transparente atrás do botão central, deixando a imagem abaixo aparecer. Login/cadastro têm foco inicial e restauração pelo Radix. Validação usa labels, descrições e alertas; loading usa shimmer e respeita movimento reduzido. Perfil, carteiras e recibo adaptam-se ao mobile mesmo sem frame específico. No pagamento mobile há acesso ao cupom e uma ação para revisar/editar os dados do coletor em diálogo. Filtros mobile usam drawer com foco contido e restauração ao fechar. O catálogo mantém a sequência da API em todos os viewports. Consultas de carrinho e carteiras distinguem erro, carregamento e vazio, com nova tentativa independente.
 
 PNGs originais permanecem locais. WebP lossless foi conferido por igualdade de pixels RGBA. Roboto Mono WOFF2 mantém os mesmos glifos latinos e métricas nos pesos usados (400–700); licença OFL incluída. Não há fonte remota necessária. Valores matematicamente inconsistentes no Figma não são reproduzidos: o total vem da API.
+
+As 15 referências originais (9 desktop e 6 mobile) permanecem em `figma-screens/`. A comparação reproduzível é gerada por `npm run capture:figma`; instruções e evidências estão no README. As baselines são capturas da implementação revisadas pelo agente, ainda sujeitas à revisão humana. Mantêm tolerância de 0,5% e não certificam igualdade pixel a pixel com o Figma.
+
+Diferenças intencionais em relação aos frames:
+
+- O carrinho mobile calcula subtotal 8,14 ETH e total 8,156 ETH para os itens exibidos; a referência mostra subtotal 8,92 ETH, inconsistente com a soma dos preços.
+- Nome, perfil, carteiras, transação e data vêm da sessão e do pedido, em vez de texto fixo dos frames. Formulários longos permitem rolagem.
+- O catálogo preserva a ordem da API em todos os viewports. A seleção de cards do frame mobile difere da desktop; trocar cards por CSS quebraria a ordenação e a leitura do resultado.
+- Cupom e revisão dos dados do coletor acrescentam controles no pagamento mobile, antes das carteiras. São comportamentos obrigatórios sem frame próprio; o botão de confirmação permanece ao fim da tela.
+- Foco visível, mensagens associadas aos campos, selects estilizados e retorno nas telas de conta mobile complementam os estados não desenhados. O perfil e as carteiras mobile preservam os campos e operações do desktop.
+
+A suíte visual cobre 390, 414, 768 e 1440 px, com fontes/imagens locais aguardadas e relógio fixado. Apenas o identificador variável do recibo é mascarado nas capturas automatizadas. Os recortes adicionais do menu verificam sua transparência por leitura de pixels. Os skips de navegação correspondem a controles ausentes no viewport, como o menu inferior no desktop e o cabeçalho completo no mobile.
 
 ## Limites
 

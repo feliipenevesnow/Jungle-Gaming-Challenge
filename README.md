@@ -24,7 +24,6 @@ No PowerShell, use `Copy-Item .env.example .env` e `npm.cmd`/`npx.cmd` caso a po
 | VITE_ENABLE_MSW | true | Ativa REST e WebSocket simulados também no build |
 | VITE_API_BASE_URL | /api | Base do Axios |
 | VITE_SOCKET_URL | vazio | Servidor Socket.IO quando os mocks estão desativados; com MSW usa a própria origem |
-| FIGMA_TOKEN | opcional, sem prefixo VITE_ | Somente scripts de download; assets já estão locais |
 
 Credenciais fictícias: `alex@kurio.art` ou `sofia@kurio.art`, senha **kurio123**. Cadastro cria uma conta independente; senhas são persistidas como PBKDF2 com salt. Uma conta nova precisa cadastrar sua carteira em `/wallets` antes de comprar. Nenhuma extensão ou pagamento real é necessário.
 
@@ -40,7 +39,7 @@ Credenciais fictícias: `alex@kurio.art` ou `sofia@kurio.art`, senha **kurio123*
 | Login e cadastro | `/login`, `/cadastro` |
 | Perfil, carteiras e favoritos | `/profile`, `/wallets`, `/favorites` |
 
-Mercado leva ao catálogo, limpa filtros e marca o destino ativo. Criadores, Aprenda, suporte e outras ações fora do escopo abrem um aviso de indisponibilidade. O relatório `artifacts/figma/report.html` contém capturas estáticas: o link no topo abre a aplicação interativa.
+Mercado leva ao catálogo, limpa filtros e marca o destino ativo. Criadores, Aprenda, suporte e outras ações fora do escopo abrem um aviso de indisponibilidade.
 
 ## Cenários de falha
 
@@ -105,12 +104,37 @@ Execute Lighthouse após o build e sem outras suítes de navegador simultâneas.
 
 `test:production` inicia preview e verifica login, alteração de preço por Socket.IO, revisão da cotação, pedido único, recibo após refresh e proteção depois do logout em desktop/mobile.
 
-Relatórios Playwright gerados: `playwright-report/`, `artifacts/navigation-report/`, `artifacts/visual-report/`. Cópias da execução final estão em `reports/playwright/`. Traces e capturas de falhas são retidos. `npm run capture:figma` exige dev em `127.0.0.1:5174` e gera comparação com os 15 frames originais.
+Relatórios Playwright gerados: `playwright-report/`, `artifacts/navigation-report/`, `artifacts/visual-report/`. Traces, vídeos e capturas são retidos quando há falhas, e a CI publica esses arquivos como artefatos. Para abrir um relatório, execute `npx playwright show-report <pasta>`.
 
-As baselines em `tests/visual-baselines/` são propostas técnicas, sujeitas à revisão humana. Testes visuais verdes demonstram estabilidade em relação a essas baselines, não certificam igualdade pixel a pixel com o Figma. Detalhes e desvios estão em [VISUAL-REVIEW.md](VISUAL-REVIEW.md).
+`npm run capture:figma` exige dev em `127.0.0.1:5174` e gera `artifacts/figma/report.html`, com comparação e sobreposição dos 15 frames originais. Esse HTML contém capturas estáticas; seu link no topo abre a aplicação interativa.
+
+As baselines em `tests/visual-baselines/` são propostas técnicas, sujeitas à revisão humana. Testes visuais verdes demonstram estabilidade em relação a essas baselines, não certificam igualdade pixel a pixel com o Figma. Decisões visuais e desvios estão em [ARCHITECTURE.md](ARCHITECTURE.md#figma-e-decisões-de-ux). Gere e compare snapshots no mesmo ambiente Chromium/Windows, pois a rasterização de fontes pode variar entre sistemas.
+
+## Resultados da entrega
+
+As evidências da execução de 16/10/2026 estão versionadas. Novas execuções geram seus próprios resultados sem substituir automaticamente as evidências entregues.
+
+| Verificação | Resultado | Relatório |
+| --- | --- | --- |
+| E2E Chromium desktop/mobile | 90 aprovados, sem retries ou testes instáveis | [HTML](reports/playwright/e2e/index.html) |
+| Navegação | 18 aprovados; 10 não aplicáveis ao viewport | [HTML](reports/playwright/navigation/index.html) |
+| Regressão visual | 16 aprovados em 390, 414, 768 e 1440 px; 38 baselines | [HTML](reports/playwright/visual/index.html) |
+| Build de produção | Compra e recuperação aprovadas em desktop/mobile | [Evidências](reports/verification.json) |
+| Checkout limpo | `npm ci`, build e compra aprovados; 99 arquivos idênticos | [Evidências](reports/verification.json) |
+
+Medianas Lighthouse, com três medições por página e perfil:
+
+| Perfil / página | Performance | Acessibilidade | Boas práticas | SEO |
+| --- | --- | --- | --- | --- |
+| Mobile / início | 91 | 98 | 100 | 92 |
+| Mobile / detalhe | 90 | 98 | 100 | 92 |
+| Desktop / início | 99 | 95 | 100 | 92 |
+| Desktop / detalhe | 97 | 100 | 100 | 92 |
+
+Os [resultados Lighthouse](lighthouse-report/summary.json) incluem LCP, CLS, TBT, ambiente e condições; os 12 pares de relatórios HTML/JSON estão na mesma pasta. O [registro consolidado](reports/verification.json) identifica o código validado, a publicação e os testes. O [manifesto do build](reports/build-manifest.json) registra os hashes dos arquivos publicados.
 
 ## Publicação
 
 `npm run prepare:deploy` cria um pacote estático em `artifacts/deploy/`, com manifesto SHA-256 de todos os arquivos, e imprime o comando de publicação. `vercel.json` configura build e fallback das rotas SPA, preservando assets e o Service Worker. Configure `VITE_ENABLE_MSW=true` e `VITE_API_BASE_URL=/api` no ambiente de build. O Socket.IO simulado usa a origem publicada. Para hospedagem estática, publique o conteúdo de `dist/` com fallback para `index.html`; mantenha `/mockServiceWorker.js` acessível por HTTPS.
 
-A evidência atual da revisão e da publicação é registrada em [RELATORIO-AUDITORIA-ESCOPO.md](RELATORIO-AUDITORIA-ESCOPO.md) e [DEPLOYMENT.md](DEPLOYMENT.md). Contratos, isolamento de sessão e limitações dos mocks estão em [ARCHITECTURE.md](ARCHITECTURE.md).
+A URL pública no início deste documento corresponde ao build registrado nas evidências. Sua disponibilidade e ausência de proteção por senha foram verificadas pela CLI/API da Vercel; os testes de navegador foram executados no mesmo build em localhost. Contratos, isolamento de sessão e limitações dos mocks estão em [ARCHITECTURE.md](ARCHITECTURE.md).
