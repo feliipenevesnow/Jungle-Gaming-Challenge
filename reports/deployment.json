@@ -1,0 +1,13 @@
+{
+  "url": "https://jungle-gaming-challenge-7uv2w2gbh-feliipenevesnows-projects.vercel.app",
+  "deploymentId": "dpl_36a4As6haEyoapWhwtk3DaQXJVNZ",
+  "target": "preview",
+  "ready": true,
+  "publicPreview": true,
+  "protection": [],
+  "buildId": "061c6cea895c440aa015c2287b8288b42ea0cab10a8ee94bdab06d1f3690422c",
+  "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+  "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
+  "verifiedBy": "Vercel CLI inspect + project API protection settings; production smoke on the same local build",
+  "timestamp": "2026-10-16T17:13:19.472429+00:00"
+}

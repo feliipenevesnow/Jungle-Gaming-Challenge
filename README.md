@@ -4,7 +4,7 @@ Marketplace de NFTs em React 19 e TypeScript, com APIs e pagamentos simulados na
 
 Repositório: https://github.com/feliipenevesnow/Jungle-Gaming-Challenge
 
-Aplicação: https://jungle-gaming-challenge-b02klmsjj-feliipenevesnows-projects.vercel.app
+Aplicação: https://jungle-gaming-challenge-7uv2w2gbh-feliipenevesnows-projects.vercel.app
 
 ## Executar
 
@@ -73,7 +73,7 @@ O slider de preço tem resolução de 0,01 ETH. Clique no intervalo exibido para
 
 Cupom válido: **KURIO10** ou **WELCOME20**. Cupom expirado: **EXPIRED50**; qualquer código desconhecido é inválido. Preços trafegam como strings com até 18 casas; exemplo independente: 1,19 − 0,119 + 0,016 = **1,087 ETH**.
 
-Eventos controláveis passam por `/api/scenario/events` e pelo transporte Socket.IO; exemplos e contratos em [ARCHITECTURE.md](ARCHITECTURE.md).
+Eventos controláveis passam por `/api/scenario/events` e pelo transporte Socket.IO; `nft.updated` com `defer:true` atualiza o REST e aguarda `{type:"nft.flush"}` para entregar o snapshot por Socket.IO. Reset/troca de cenário limpam a fila; exemplos e contratos em [ARCHITECTURE.md](ARCHITECTURE.md).
 
 Reset integral dos mocks (apaga os dados simulados desta origem e invalida suas sessões):
 
@@ -105,7 +105,7 @@ Execute Lighthouse após o build e sem outras suítes de navegador simultâneas.
 
 `test:production` inicia preview e verifica login, alteração de preço por Socket.IO, revisão da cotação, pedido único, recibo após refresh e proteção depois do logout em desktop/mobile.
 
-Relatórios Playwright: `playwright-report/`, `artifacts/navigation-report/`, `artifacts/visual-report/`. Traces e capturas de falhas são retidos. `npm run capture:figma` exige dev em `127.0.0.1:5174` e gera comparação com os 15 frames originais.
+Relatórios Playwright gerados: `playwright-report/`, `artifacts/navigation-report/`, `artifacts/visual-report/`. Cópias da execução final estão em `reports/playwright/`. Traces e capturas de falhas são retidos. `npm run capture:figma` exige dev em `127.0.0.1:5174` e gera comparação com os 15 frames originais.
 
 As baselines em `tests/visual-baselines/` são propostas técnicas, sujeitas à revisão humana. Testes visuais verdes demonstram estabilidade em relação a essas baselines, não certificam igualdade pixel a pixel com o Figma. Detalhes e desvios estão em [VISUAL-REVIEW.md](VISUAL-REVIEW.md).
 

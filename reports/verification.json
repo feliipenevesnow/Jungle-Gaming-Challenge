@@ -1,0 +1,189 @@
+{
+  "timestamp": "2026-10-16T17:13:19.615175+00:00",
+  "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
+  "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+  "buildId": "061c6cea895c440aa015c2287b8288b42ea0cab10a8ee94bdab06d1f3690422c",
+  "playwright": {
+    "e2e": {
+      "stats": {
+        "total": 90,
+        "expected": 90,
+        "unexpected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "ok": true
+      },
+      "startTime": 1792170362167,
+      "duration": 310449.248,
+      "metadata": {
+        "actualWorkers": 2
+      },
+      "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53"
+    },
+    "navigation": {
+      "stats": {
+        "total": 28,
+        "expected": 18,
+        "unexpected": 0,
+        "flaky": 0,
+        "skipped": 10,
+        "ok": true
+      },
+      "startTime": 1792170434792,
+      "duration": 43979.65,
+      "metadata": {
+        "actualWorkers": 2
+      },
+      "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53"
+    },
+    "visual": {
+      "stats": {
+        "total": 16,
+        "expected": 16,
+        "unexpected": 0,
+        "flaky": 0,
+        "skipped": 0,
+        "ok": true
+      },
+      "startTime": 1792170373572,
+      "duration": 59669.304000000004,
+      "metadata": {
+        "actualWorkers": 2
+      },
+      "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53"
+    }
+  },
+  "baselines": 38,
+  "lighthouse": [
+    {
+      "profile": "mobile",
+      "path": "/",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 91,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3471.843,
+      "cls": 0,
+      "tbtMs": 63.000000000000114
+    },
+    {
+      "profile": "mobile",
+      "path": "/nfts/nft-1",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 90,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3602.522,
+      "cls": 0.0515141090961704,
+      "tbtMs": 21
+    },
+    {
+      "profile": "desktop",
+      "path": "/",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 99,
+        "accessibility": 95,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 25
+      },
+      "lcpMs": 978.5139999999999,
+      "cls": 8.279849983947698e-05,
+      "tbtMs": 0
+    },
+    {
+      "profile": "desktop",
+      "path": "/nfts/nft-1",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 48
+      },
+      "lcpMs": 909.1580000000001,
+      "cls": 0.08779966727957271,
+      "tbtMs": 0
+    }
+  ],
+  "productionSmoke": [
+    {
+      "width": 1440,
+      "passed": true,
+      "socketPriceUpdated": true,
+      "status": "CONFIRMED",
+      "totalEth": "28.846",
+      "orders": 1,
+      "refreshRecovered": true,
+      "authGuard": true
+    },
+    {
+      "width": 390,
+      "passed": true,
+      "socketPriceUpdated": true,
+      "status": "CONFIRMED",
+      "totalEth": "28.846",
+      "orders": 1,
+      "refreshRecovered": true,
+      "authGuard": true
+    }
+  ],
+  "cleanCheckout": {
+    "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
+    "npmCi": true,
+    "build": true,
+    "productionSmoke": {
+      "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+      "results": [
+        {
+          "width": 1440,
+          "passed": true,
+          "socketPriceUpdated": true,
+          "status": "CONFIRMED",
+          "totalEth": "28.846",
+          "orders": 1,
+          "refreshRecovered": true,
+          "authGuard": true
+        },
+        {
+          "width": 390,
+          "passed": true,
+          "socketPriceUpdated": true,
+          "status": "CONFIRMED",
+          "totalEth": "28.846",
+          "orders": 1,
+          "refreshRecovered": true,
+          "authGuard": true
+        }
+      ]
+    },
+    "filesEqual": true,
+    "fileCount": 99,
+    "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+    "lineEndings": "LF enforced by .gitattributes"
+  },
+  "deployment": {
+    "url": "https://jungle-gaming-challenge-7uv2w2gbh-feliipenevesnows-projects.vercel.app",
+    "deploymentId": "dpl_36a4As6haEyoapWhwtk3DaQXJVNZ",
+    "target": "preview",
+    "ready": true,
+    "publicPreview": true,
+    "protection": [],
+    "buildId": "061c6cea895c440aa015c2287b8288b42ea0cab10a8ee94bdab06d1f3690422c",
+    "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+    "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
+    "verifiedBy": "Vercel CLI inspect + project API protection settings; production smoke on the same local build",
+    "timestamp": "2026-10-16T17:13:19.472429+00:00"
+  },
+  "remotePush": "awaiting explicit authorization"
+}

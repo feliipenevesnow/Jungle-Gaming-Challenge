@@ -1,0 +1,34 @@
+{
+  "sourceCommit": "a99c936db2fbff599a461484ecbdf27d84089e53",
+  "npmCi": true,
+  "build": true,
+  "productionSmoke": {
+    "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+    "results": [
+      {
+        "width": 1440,
+        "passed": true,
+        "socketPriceUpdated": true,
+        "status": "CONFIRMED",
+        "totalEth": "28.846",
+        "orders": 1,
+        "refreshRecovered": true,
+        "authGuard": true
+      },
+      {
+        "width": 390,
+        "passed": true,
+        "socketPriceUpdated": true,
+        "status": "CONFIRMED",
+        "totalEth": "28.846",
+        "orders": 1,
+        "refreshRecovered": true,
+        "authGuard": true
+      }
+    ]
+  },
+  "filesEqual": true,
+  "fileCount": 99,
+  "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+  "lineEndings": "LF enforced by .gitattributes"
+}

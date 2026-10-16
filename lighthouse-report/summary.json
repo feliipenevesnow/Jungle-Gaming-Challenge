@@ -1,0 +1,280 @@
+{
+  "timestamp": "2026-10-16T17:03:16.156Z",
+  "htmlSha256": "f5509e879a658011e9a8878ab1be7e43be9fcbeeea14ca516d846f92b3aca28b",
+  "conditions": "Production preview, default MSW, cold browser per run, Lighthouse standard simulated throttling, no concurrent test suites",
+  "environment": {
+    "node": "v24.19.0",
+    "os": "win32 10.0.26200",
+    "cpu": "AMD Ryzen 7 5700G with Radeon Graphics         ",
+    "logicalCPUs": 16,
+    "browser": "156.0.8078.4"
+  },
+  "runs": [
+    {
+      "profile": "mobile",
+      "path": "/",
+      "run": 1,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 91,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3470.236000000001,
+      "cls": 0,
+      "tbtMs": 63.000000000000114,
+      "warnings": []
+    },
+    {
+      "profile": "mobile",
+      "path": "/",
+      "run": 2,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 91,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3477.214000000001,
+      "cls": 0,
+      "tbtMs": 65.89800000000002,
+      "warnings": []
+    },
+    {
+      "profile": "mobile",
+      "path": "/",
+      "run": 3,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 91,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3471.843,
+      "cls": 0,
+      "tbtMs": 16,
+      "warnings": []
+    },
+    {
+      "profile": "mobile",
+      "path": "/nfts/nft-1",
+      "run": 1,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 90,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3635.402,
+      "cls": 0.0515141090961704,
+      "tbtMs": 22,
+      "warnings": []
+    },
+    {
+      "profile": "mobile",
+      "path": "/nfts/nft-1",
+      "run": 2,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 90,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3587.552999999999,
+      "cls": 0.0515141090961704,
+      "tbtMs": 17,
+      "warnings": []
+    },
+    {
+      "profile": "mobile",
+      "path": "/nfts/nft-1",
+      "run": 3,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 90,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3602.522,
+      "cls": 0.0515141090961704,
+      "tbtMs": 21,
+      "warnings": []
+    },
+    {
+      "profile": "desktop",
+      "path": "/",
+      "run": 1,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 99,
+        "accessibility": 95,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 25
+      },
+      "lcpMs": 984.742,
+      "cls": 0.00008279849983947698,
+      "tbtMs": 0,
+      "warnings": []
+    },
+    {
+      "profile": "desktop",
+      "path": "/",
+      "run": 2,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 99,
+        "accessibility": 95,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 25
+      },
+      "lcpMs": 978.5139999999999,
+      "cls": 0.00008279849983947698,
+      "tbtMs": 0,
+      "warnings": []
+    },
+    {
+      "profile": "desktop",
+      "path": "/",
+      "run": 3,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 99,
+        "accessibility": 95,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 25
+      },
+      "lcpMs": 976.5400000000001,
+      "cls": 0.00008279849983947698,
+      "tbtMs": 0,
+      "warnings": []
+    },
+    {
+      "profile": "desktop",
+      "path": "/nfts/nft-1",
+      "run": 1,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 48
+      },
+      "lcpMs": 909.1580000000001,
+      "cls": 0.08779966727957271,
+      "tbtMs": 0,
+      "warnings": []
+    },
+    {
+      "profile": "desktop",
+      "path": "/nfts/nft-1",
+      "run": 2,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 48
+      },
+      "lcpMs": 901.9514999999999,
+      "cls": 0.08779966727957271,
+      "tbtMs": 0,
+      "warnings": []
+    },
+    {
+      "profile": "desktop",
+      "path": "/nfts/nft-1",
+      "run": 3,
+      "lighthouseVersion": "13.5.0",
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 48
+      },
+      "lcpMs": 910.094,
+      "cls": 0.08779966727957271,
+      "tbtMs": 0,
+      "warnings": []
+    }
+  ],
+  "medians": [
+    {
+      "profile": "mobile",
+      "path": "/",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 91,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3471.843,
+      "cls": 0,
+      "tbtMs": 63.000000000000114
+    },
+    {
+      "profile": "mobile",
+      "path": "/nfts/nft-1",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 90,
+        "accessibility": 98,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 50
+      },
+      "lcpMs": 3602.522,
+      "cls": 0.0515141090961704,
+      "tbtMs": 21
+    },
+    {
+      "profile": "desktop",
+      "path": "/",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 99,
+        "accessibility": 95,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 25
+      },
+      "lcpMs": 978.5139999999999,
+      "cls": 0.00008279849983947698,
+      "tbtMs": 0
+    },
+    {
+      "profile": "desktop",
+      "path": "/nfts/nft-1",
+      "measuredRuns": 3,
+      "scores": {
+        "performance": 97,
+        "accessibility": 100,
+        "best-practices": 100,
+        "seo": 92,
+        "agentic-browsing": 48
+      },
+      "lcpMs": 909.1580000000001,
+      "cls": 0.08779966727957271,
+      "tbtMs": 0
+    }
+  ]
+}
