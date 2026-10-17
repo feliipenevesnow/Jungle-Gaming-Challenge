@@ -141,7 +141,7 @@ function OrderConfirmationPage() {
           <X className="w-5 h-5" />
         </button>
 
-        <div className="p-8 md:p-10">
+        <div className="order-receipt-body flex-1 overflow-y-auto">
           {/* Top Thank You Graphic (Envelope with THANK YOU letter) */}
           <div className="flex flex-col items-center justify-center text-center mb-6">
             <svg className="receipt-thanks" width="80" height="80" viewBox="0 0 80 80" fill="none" aria-label="Obrigado pela compra"><g stroke="#D28A4C" strokeWidth="2.2" strokeLinejoin="round"><path d="M8 33 14 26M66 26l6 7v45H8V33M30 7l5-5h10l5 5" /><path d="M14 39V7h52v32M8 33l23 24m18 0 23-24M8 78l28-31a6 6 0 0 1 8 0l28 31" /></g><text x="40" y="25" fill="#D28A4C" textAnchor="middle" fontSize="13" fontWeight="700">THANK</text><text x="40" y="39" fill="#D28A4C" textAnchor="middle" fontSize="13" fontWeight="700">YOU</text></svg>

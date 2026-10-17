@@ -191,7 +191,7 @@ export const SidebarFilters: React.FC<SidebarFiltersProps> = ({
   return (
     <aside className="catalog-filters flex w-full flex-col gap-4 md:w-[280px] lg:w-[310px]">
       {mobile ? <Sheet open={mobileOpen} onOpenChange={onMobileOpenChange}>
-        <SheetContent side="bottom" className="mobile-filters-sheet z-[100] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-t-3xl" onCloseAutoFocus={event => { event.preventDefault(); requestAnimationFrame(() => document.querySelector<HTMLButtonElement>('[aria-label="Filtros do catálogo"]')?.focus()) }}>
+        <SheetContent side="bottom" overlayClassName="mobile-filters-overlay z-[90]" className="mobile-filters-sheet z-[100] max-h-[calc(100dvh-24px)] overflow-y-auto rounded-t-3xl" onCloseAutoFocus={event => { event.preventDefault(); requestAnimationFrame(() => document.querySelector<HTMLButtonElement>('[aria-label="Filtros do catálogo"]')?.focus()) }}>
           <SheetTitle>Filtros do catálogo</SheetTitle><SheetDescription>Combine coleção, rede, preço e ordenação.</SheetDescription>
           {panel}
           <div className="flex items-center justify-between gap-4 pt-4"><Button variant="outline" onClick={onClearFilters}>Limpar filtros</Button><SheetClose asChild><Button>Ver resultados</Button></SheetClose></div>

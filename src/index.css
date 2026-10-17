@@ -2,6 +2,10 @@
 @import "./figma.css";
 
 @layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+
   :root {
     color-scheme: dark;
     --font-mono: 'Roboto Mono', monospace;

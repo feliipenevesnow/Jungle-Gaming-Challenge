@@ -1,5 +1,5 @@
 import React from 'react'
-import { Heart, ShoppingBag, Search } from 'lucide-react'
+import { Heart, ShoppingCart, Search } from 'lucide-react'
 import type { NFT } from '@/types/api'
 
 interface NFTCardProps {
@@ -64,7 +64,7 @@ export const NFTCard: React.FC<NFTCardProps> = ({
             aria-label={`Adicionar ${nft.name} ao carrinho`}
             className="flex h-8 w-8 items-center justify-center rounded-md bg-[#241612] text-[#F5F1EB] transition-colors hover:bg-[#D28A4C] hover:text-[#140D0A] cursor-pointer"
           >
-            <ShoppingBag className="h-4 w-4" />
+            <ShoppingCart className="h-4 w-4" />
           </button>}
 
           {/* 2. Toggle Favorite */}

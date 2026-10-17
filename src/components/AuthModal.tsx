@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { Eye, EyeOff, AlertCircle, Info } from 'lucide-react'
+import { Eye, EyeOff, AlertCircle, Info, ChevronLeft } from 'lucide-react'
+import { useNavigate } from '@tanstack/react-router'
 import { isAxiosError } from 'axios'
 import { apiErrorMessage } from '@/lib/api-error'
 import { useAuth } from '@/lib/auth'
@@ -14,6 +15,12 @@ export function AuthModal() {
 }
 function AuthModalForm() {
   const { isAuthModalOpen, closeAuthModal, authModalMode, login, register, restoreAuthFocus } = useAuth()
+  const navigate = useNavigate()
+
+  const handleBack = () => {
+    closeAuthModal()
+    navigate({ to: '/' })
+  }
 
 
   const [mode, setMode] = useState<'login' | 'register'>(authModalMode)
@@ -64,8 +71,16 @@ function AuthModalForm() {
   }
 
   return (
-    <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && closeAuthModal()}>
+    <Dialog open={isAuthModalOpen} onOpenChange={(open) => !open && handleBack()}>
       <DialogContent data-mode={mode} onCloseAutoFocus={event => { event.preventDefault(); restoreAuthFocus() }} className="auth-dialog w-full max-w-[500px] p-0 overflow-hidden bg-[#241612] border border-[#3F2319] shadow-2xl rounded-xl">
+        <button
+          type="button"
+          onClick={handleBack}
+          className="auth-mobile-back"
+          aria-label="Voltar para a tela inicial"
+        >
+          <ChevronLeft size={24} />
+        </button>
         <div className="auth-mobile-brand">KURIO</div>
         <div className="auth-mobile-title">{mode === 'login' ? 'Entrar' : 'Criar perfil de colecionador'}</div>
         {/* Modal Header */}

@@ -41,7 +41,7 @@ export const Header: React.FC<HeaderProps> = () => {
 
   return (
     <header className="site-header top-0 z-40 w-full border-b border-[#3F2319] bg-[#140D0A]/95 backdrop-blur-md">
-      <div className="mx-auto flex max-w-[1264px] items-center justify-between px-4 py-4 md:px-8">
+      <div className="mx-auto flex max-w-316 items-center justify-between px-4 py-4 md:px-8">
         {/* Brand Logo */}
         <Link to="/" search={{}} hash="" onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })} className="flex items-center gap-2 group">
           <span className="font-mono text-sm font-bold tracking-[0.08em] text-[#F5F1EB] transition-colors group-hover:text-[#E89B55]">
@@ -55,28 +55,35 @@ export const Header: React.FC<HeaderProps> = () => {
             to="/"
             search={{}}
             hash=""
-            onClick={() => window.scrollTo({ top: 0, behavior: 'instant' })}
+            onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
             className={`group relative flex flex-col py-1 text-sm font-bold tracking-wider transition-colors ${
               isInicio ? 'text-[#E89B55]' : 'text-[#F5F1EB] hover:text-[#E89B55]'
             }`}
           >
             Início
             {isInicio && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full bg-[#D28A4C]" />
+              <span className="absolute bottom-0 left-0 h-0.5 w-full bg-[#D28A4C]" />
             )}
           </Link>
           <Link
             to="/"
             search={{}}
             hash="catalogo"
-            onClick={() => document.getElementById('catalogo')?.scrollIntoView({ block: 'start' })}
+            onClick={(e) => {
+              const el = document.getElementById('catalogo')
+              if (el) {
+                e.preventDefault()
+                el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                window.history.pushState(null, '', '/#catalogo')
+              }
+            }}
             className={`group relative flex flex-col py-1 text-sm font-bold tracking-wider transition-colors ${
               isMercado ? 'text-[#E89B55]' : 'text-[#F5F1EB] hover:text-[#E89B55]'
             }`}
           >
             Mercado
             {isMercado && (
-              <span className="absolute bottom-0 left-0 h-[2px] w-full bg-[#D28A4C]" />
+              <span className="absolute bottom-0 left-0 h-0.5 w-full bg-[#D28A4C]" />
             )}
           </Link>
           <UnavailableAction

@@ -96,6 +96,15 @@ export function HomePage() {
     }
   }, [queryClient])
 
+  useEffect(() => {
+    if (window.location.hash === '#catalogo') {
+      const timer = setTimeout(() => {
+        document.getElementById('catalogo')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
   const { favoriteIds, toggleFavorite, isUpdating } = useFavorites()
   const handleToggleFavorite = (id: string) => {
     const nft = data?.items.find(item => item.id === id)
@@ -143,10 +152,10 @@ export function HomePage() {
 
       {addToCartMutation.isError && <p className="page-width text-[#F0805F]" role="alert">Não foi possível adicionar o NFT. Confira o estoque e tente novamente.</p>}
       {/* Catalog & Filter Section */}
-      <section id="catalogo" aria-busy={isFetching} className="catalog-section mx-auto max-w-[1240px] px-4 py-16 md:px-8">
+      <section id="catalogo" aria-busy={isFetching} className="catalog-section mx-auto max-w-310 px-4 py-16 md:px-8">
         <div className="flex flex-col gap-10 md:flex-row">
           {/* Left Column: Filters */}
-          {(!mobile || filtersOpen) && <Suspense fallback={<aside className="catalog-filters" aria-label="Carregando filtros" aria-busy="true"><div className="filter-panel skeleton-shimmer h-[720px]" /></aside>}><SidebarFilters
+          <Suspense fallback={<aside className="catalog-filters" aria-label="Carregando filtros" aria-busy="true"><div className="filter-panel skeleton-shimmer h-180" /></aside>}><SidebarFilters
             mobileOpen={filtersOpen}
             onMobileOpenChange={setFiltersOpen}
             collections={data?.collections || []}
@@ -161,7 +170,7 @@ export function HomePage() {
             onClearFilters={handleClearFilters}
             selectedSort={sort}
             onSortChange={value => updateFilters({ sort: value })}
-          /></Suspense>}
+          /></Suspense>
 
           {/* Right Column: Catalog */}
           <div className="catalog-content flex flex-1 flex-col gap-8">
@@ -273,7 +282,7 @@ export function HomePage() {
                   Tentar novamente
                 </button>
               </div>
-            ) : data?.items.length === 0 ? (
+            ) : data?.items?.length === 0 ? (
               <div className="flex flex-col items-center justify-center rounded-xl border border-[#3F2319] bg-[#241612] p-12 text-center font-mono">
                 <p className="text-base font-bold text-[#E89B55]">
                   Nenhum NFT encontrado com os filtros selecionados.
@@ -337,7 +346,7 @@ export function HomePage() {
       </section>
 
       {/* Promos Section (Matching Figma frame 70353:241) */}
-      <section id="promos" className="mx-auto max-w-[1240px] px-4 py-8 md:px-8">
+      <section id="promos" className="mx-auto max-w-310 px-4 py-8 md:px-8">
         <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
           {/* Promo 1 */}
           <div className="flex flex-col-reverse items-center justify-between gap-6 rounded-2xl border border-[#3F2319] bg-[#241612] p-8 sm:flex-row">
@@ -392,7 +401,7 @@ export function HomePage() {
       </section>
 
       {/* Educational / Blog Section (Matching Figma frame 70353:288) */}
-      <section id="blog" className="mx-auto max-w-[1240px] px-4 py-16 md:px-8 font-mono">
+      <section id="blog" className="mx-auto max-w-310 px-4 py-16 md:px-8 font-mono">
         <div className="flex flex-col gap-2">
           <span className="text-xs font-bold uppercase tracking-wider text-[#D28A4C]">
             Diário da Cunhagem

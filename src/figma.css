@@ -1076,19 +1076,33 @@ button:disabled{
     margin: 0;
   }
   .mobile-nav{
-    display:flex;
-    position:fixed;
-    z-index:40;
-    bottom:0;
-    left:0;
-    right:0;
+    display:flex !important;
+    position:fixed !important;
+    z-index:50 !important;
+    bottom:0 !important;
+    left:0 !important;
+    right:0 !important;
+    margin:0 !important;
+    margin-bottom:0 !important;
     height:calc(95px + env(safe-area-inset-bottom));
     padding:26px 28px calc(18px + env(safe-area-inset-bottom));
     align-items:center;
     justify-content:space-between;
     background:transparent;
     border-radius:0;
-    color:#cfb28c
+    color:#cfb28c;
+    box-sizing:border-box !important;
+  }
+  .mobile-nav::after{
+    content:'';
+    position:absolute;
+    left:0;
+    right:0;
+    bottom:-10px;
+    height:12px;
+    background:#241612;
+    pointer-events:none;
+    z-index:-1;
   }
   .mobile-nav>a,.mobile-nav>button{
     position:relative;
@@ -1102,10 +1116,11 @@ button:disabled{
     height:20px
   }
   .mobile-nav .mobile-nav-surface{
-    position:absolute;
-    inset:0;
-    width:100%;
-    height:100%;
+    position:absolute !important;
+    inset:0 !important;
+    bottom:0 !important;
+    width:100% !important;
+    height:100% !important;
     pointer-events:none
   }
   .mobile-nav>a[aria-current=page]:not(.mobile-nav-explore){
@@ -1118,7 +1133,7 @@ button:disabled{
     background:linear-gradient(100deg,#a66330d9,#e3ad6bc9);
     box-shadow:none;
     color:#f5f1eb;
-    transform:translateY(-36px)
+    transform:translateY(-46px)
   }
   .mobile-nav-explore svg{
     width:30px;
@@ -1130,7 +1145,7 @@ button:disabled{
     width:100%!important;
     max-width:100%!important;
     margin:0!important;
-    padding:0 0 100px!important;
+    padding:0 0 calc(125px + env(safe-area-inset-bottom))!important;
     border-top:1px solid #3F2319!important;
     background:#140D0A!important
   }
@@ -1559,7 +1574,7 @@ button:disabled{
   bottom:0;
   height:10px
 }
-.auth-mobile-brand,.auth-mobile-title,.auth-switch-mobile,.auth-mobile-submit{
+.auth-mobile-brand,.auth-mobile-title,.auth-switch-mobile,.auth-mobile-submit,.auth-mobile-back{
   display:none
 }
 .auth-confirm-eye{
@@ -1587,6 +1602,29 @@ button:disabled{
     padding:0 28px;
     overflow-y:auto;
     overscroll-behavior:contain
+  }
+  .auth-mobile-back{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:absolute;
+    top:max(20px, env(safe-area-inset-top));
+    left:20px;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    background:#241612;
+    border:1px solid #3F2319;
+    color:#cfb28c;
+    cursor:pointer;
+    z-index:20;
+    transition:all 0.15s ease;
+  }
+  .auth-mobile-back:hover,
+  .auth-mobile-back:active{
+    border-color:#d28a4c;
+    color:#e89b55;
+    background:#2f1d15;
   }
   .auth-mobile-brand{
     display:block;
@@ -2524,94 +2562,109 @@ footer>div:first-child{
   transform:translateY(-20px)
 }
 .order-page{
-  min-height:1625px;
-  padding:166px 24px 80px;
+  min-height:100vh;
+  min-height:100dvh;
+  padding:24px 16px;
   display:flex;
-  align-items:flex-start;
-  justify-content:center
+  align-items:center;
+  justify-content:center;
+  box-sizing:border-box
 }
 .order-receipt{
-  border:0;
-  border-radius:0;
-  box-shadow:none;
-  animation:none
+  border:1px solid #3F2319;
+  border-radius:16px;
+  box-shadow:0 25px 60px -15px rgba(0,0,0,.8),0 0 0 1px rgba(210,138,76,.15);
+  max-width:540px;
+  width:100%;
+  max-height:min(90vh, 720px);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  position:relative;
+  margin:auto
 }
-.order-receipt>div:first-of-type{
-  padding:24px 44px 48px
+.order-receipt>div:first-of-type,
+.order-receipt-body{
+  padding:20px 28px 24px;
+  overflow-y:auto;
+  flex:1 1 auto
+}
+.order-receipt>div:last-child{
+  flex-shrink:0
 }
 .order-receipt h1{
   color:#cfb28c;
   font-weight:700;
   margin:0;
-  font-size:16px
+  font-size:15px
 }
 .order-receipt>div>div:first-child>div>div{
-  width:80px;
-  height:80px;
+  width:64px;
+  height:64px;
   border:0;
   border-radius:0;
   background:transparent
 }
 .order-receipt>div>div:first-child>div>div>span{
-  font-size:12px
+  font-size:11px
 }
 .order-receipt>div>div:first-child>div>div>svg{
-  width:64px;
-  height:48px
+  width:56px;
+  height:42px
 }
 .order-receipt .grid{
-  margin-inline:-44px;
-  padding:16px 30px;
+  margin-inline:-28px;
+  padding:12px 24px;
   border-color:#d28a4c;
   text-align:left;
-  gap:16px
+  gap:12px
 }
 .order-receipt .grid>div{
   border-color:#d28a4c
 }
 .order-receipt .grid span{
-  font-size:14px!important;
+  font-size:12px!important;
   font-weight:400;
   color:#cfb28c;
   margin:0
 }
 .order-receipt h2{
-  font-size:14px
+  font-size:13px
 }
 .order-receipt img{
-  width:70px;
-  height:70px;
+  width:48px;
+  height:48px;
   border:0;
   border-radius:8px
 }
 .order-receipt .space-y-3>div{
-  font-size:16px
+  font-size:13px
 }
 .order-receipt .space-y-3>div>div:last-child{
-  font-size:18px;
+  font-size:15px;
   white-space:nowrap
 }
 .order-receipt .space-y-3>div>div:nth-child(2){
-  font-size:14px
+  font-size:12px
 }
 .order-receipt .space-y-3 p+p{
-  font-size:14px;
+  font-size:12px;
   color:#b39463
 }
 .order-receipt .space-y-2{
-  font-size:16px;
+  font-size:13px;
   border-top:0;
   border-bottom:1px solid #55321f;
-  padding:0 0 8px 170px
+  padding:0 0 8px 120px
 }
 .order-receipt p.text-center{
-  font-size:14px;
-  line-height:22px;
+  font-size:12px;
+  line-height:18px;
   color:#cfb28c
 }
 .order-receipt button{
-  font-size:16px;
-  height:48px
+  font-size:14px;
+  height:42px
 }
 .order-status{
   padding-top:166px
@@ -2645,11 +2698,23 @@ footer>div:first-child{
     letter-spacing:-.35px
   }
   .order-page{
-    padding:40px 16px;
-    min-height:100dvh
+    padding:16px 12px;
+    min-height:100dvh;
+    display:flex;
+    align-items:center;
+    justify-content:center
   }
-  .order-receipt>div:first-of-type{
-    padding:24px 16px
+  .order-receipt{
+    max-height:calc(100dvh - 32px);
+    border-radius:12px
+  }
+  .order-receipt>div:first-of-type,
+  .order-receipt-body{
+    padding:20px 16px;
+    max-height:calc(100dvh - 42px)
+  }
+  aside.catalog-filters{
+    display:contents
   }
   .order-receipt .grid{
     margin-inline:-16px;
@@ -2682,6 +2747,67 @@ footer>div:first-child{
   }
   .order-receipt h1{
     font-size:14px
+  }
+}
+
+/* Mobile Filter Sheet & Overlay smooth animations */
+.mobile-filters-sheet {
+  will-change: transform, opacity;
+}
+
+.mobile-filters-sheet[data-state="open"] {
+  animation: mobileFilterSheetIn 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards !important;
+}
+
+.mobile-filters-sheet[data-state="closed"] {
+  animation: mobileFilterSheetOut 0.25s cubic-bezier(0.4, 0, 1, 1) forwards !important;
+}
+
+@keyframes mobileFilterSheetIn {
+  0% {
+    transform: translateY(100%);
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes mobileFilterSheetOut {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+.mobile-filters-overlay[data-state="open"] {
+  animation: mobileFilterOverlayIn 0.3s ease-out forwards !important;
+}
+
+.mobile-filters-overlay[data-state="closed"] {
+  animation: mobileFilterOverlayOut 0.25s ease-in forwards !important;
+}
+
+@keyframes mobileFilterOverlayIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes mobileFilterOverlayOut {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
   }
 }
 /* Remove utility spacing on the password wrapper: the frame uses a 12px field gap. */

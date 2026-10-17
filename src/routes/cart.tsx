@@ -145,8 +145,11 @@ function CartPage() {
   ) || suggestedData?.items?.slice(0, 5) || []
 
   const handleProceedToCheckout = () => {
+    if (!isAuthenticated) {
+      openAuthModal('login')
+      return
+    }
     navigate({ to: '/checkout' })
-    if (!isAuthenticated) openAuthModal('login')
   }
 
   if (sessionError) return <div className="page-width py-16" role="alert"><h1>Não foi possível recuperar sua sessão</h1><p className="my-4">Confira sua conexão e tente novamente para carregar o carrinho.</p><Button onClick={retrySession}>Tentar novamente</Button></div>

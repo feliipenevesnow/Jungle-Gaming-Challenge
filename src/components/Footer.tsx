@@ -8,7 +8,7 @@ export const Footer: React.FC = () => {
     <footer className="mt-20 border-t border-[#3F2319] bg-[#140D0A] font-mono">
       {/* 4 Pillars Section matching Figma 11:1278 and 2:2 */}
       <div className="border-b border-[#3F2319] bg-[#241612]/40 py-12">
-        <div className="mx-auto grid max-w-[1240px] grid-cols-1 gap-8 px-4 sm:grid-cols-2 md:px-8 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-310 grid-cols-1 gap-8 px-4 sm:grid-cols-2 md:px-8 lg:grid-cols-4">
           {/* Pillar 1: W */}
           <div className="flex flex-col gap-3">
             <div className="flex h-12 w-12 items-center justify-center rounded-full bg-[#D28A4C] font-mono text-lg font-bold text-[#140D0A] shadow-md">
@@ -75,7 +75,7 @@ export const Footer: React.FC = () => {
 
       {/* Brown Sub-bar matching Figma layout */}
       <div className="border-b border-[#3F2319] bg-[#241612] py-4">
-        <div className="mx-auto flex max-w-[1240px] flex-col md:flex-row items-center justify-between gap-4 px-4 md:px-8 text-xs font-mono text-[#CFB28C]">
+        <div className="mx-auto flex max-w-310 flex-col md:flex-row items-center justify-between gap-4 px-4 md:px-8 text-xs font-mono text-[#CFB28C]">
           <span className="font-bold tracking-[0.2em] text-[#F5F1EB] text-sm">KURIO</span>
           <span>Feito para colecionadores, criadores e cultura</span>
           <span className="text-[#CFB28C] hover:text-[#E89B55]">contato@email.com</span>
@@ -84,7 +84,7 @@ export const Footer: React.FC = () => {
       </div>
 
       {/* Main Footer Links */}
-      <div className="mx-auto max-w-[1240px] px-4 py-12 md:px-8">
+      <div className="mx-auto max-w-310 px-4 py-12 md:px-8">
         <div className="grid grid-cols-2 gap-8 md:grid-cols-4">
           <div>
             <h5 className="font-mono text-sm font-bold text-[#F5F1EB]">Meu perfil</h5>
